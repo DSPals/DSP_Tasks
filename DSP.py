@@ -4,15 +4,14 @@ import numpy as np
 import io
 
 # ==========================
-# Utility Function -temp- (can not make read from uploading locally & without using streamlit cloud so GPT suggested this)
+# Utility Function 
 # ========================== 
 
 def read_signal(file):
     """Read a signal from a txt file (works for both uploaded file and path)."""
-    # Handle Streamlit uploaded file (BytesIO)
     if hasattr(file, "read"):  
         content = file.read().decode("utf-8").strip().split("\n")
-    else:  # Normal path string
+    else: 
         with open(file, "r") as f:
             content = f.read().strip().split("\n")
 
@@ -25,15 +24,13 @@ def read_signal(file):
         if len(line.split()) == 2:
             start_idx = i
             break
-
+        
     if start_idx is None:
         raise ValueError("No valid signal data found in file.")
 
     data = [list(map(int, line.split())) for line in content[start_idx:]]
     indices, values = zip(*data)
     return np.array(indices), np.array(values)
-
-###############################################################################################33
 
 def plot_signal(indices, values, title="Signal"):
     fig, ax = plt.subplots()
@@ -43,7 +40,6 @@ def plot_signal(indices, values, title="Signal"):
     ax.set_ylabel("x[n]")
     ax.grid(True, which="both")
     st.pyplot(fig)
-
 
 def download_signal(indices, values, label="Download Result", default_name="output.txt"):
     buffer = io.StringIO()
@@ -57,6 +53,9 @@ def download_signal(indices, values, label="Download Result", default_name="outp
         mime="text/plain"
     )
 
+# ==========================
+# Main Functions 
+# ========================== 
 
 def add_signals(signals):
     result_dict = {}
@@ -67,11 +66,9 @@ def add_signals(signals):
     values = np.array([result_dict[n] for n in indices])
     return indices, values
 
-
 def multiply_signal(signal, k):
     indices, values = signal
     return indices, values * k
-
 
 def subtract_signals(signals):
     # take the first signal as is
@@ -83,9 +80,8 @@ def subtract_signals(signals):
     return result
 
 
-def delay_advance_signal(signal, k):
+def shift_signal(signal, k):
     indices, values = signal
-    # shift indices by k
     return indices + k, values
 
 def fold_signal(signal):
@@ -96,9 +92,13 @@ def fold_signal(signal):
 
 
 
-###################### GUI APP #####################################
+# ==========================
+# GUI Functions 
+# ========================== 
 
-st.title("DSP")
+# use command py -m streamlit run d:\DSP_Tasks\DSP.py to run project
+
+st.title("DSP Signal Processor")
 
 # File uploader
 uploaded_files = st.file_uploader("Upload signal files", type=["txt"], accept_multiple_files=True)
@@ -110,23 +110,6 @@ if uploaded_files:
         signals.append((indices, values))
         st.write(f"Loaded `{uploaded_file.name}` with {len(values)} samples")
         plot_signal(indices, values, title=f"{uploaded_file.name}")
-
-# signal_paths = [
-#     r"C:\Users\NOURAN\Downloads\Task 1 testcases and testing functions\Task 1 testcases and testing functions\Signal1.txt",
-#     r"C:\Users\NOURAN\Downloads\Task 1 testcases and testing functions\Task 1 testcases and testing functions\Signal2.txt",
-# ]
-
-# signal_paths = [
-#     "D:\Downloads\Task 1 testcases and testing functions\Task 1 testcases and testing functions\Signal1.txt",
-#     "D:\Downloads\Task 1 testcases and testing functions\Task 1 testcases and testing functions\Signal2.txt",
-# ]
-
-# signals = []
-# for path in signal_paths:
-#     indices, values = read_signal(path)
-#     signals.append((indices, values))
-#     st.write(f"Loaded {path} with {len(values)} samples")
-#     plot_signal(indices, values, title=f"Original Signal")
 
 if signals:
     option = st.selectbox(
@@ -157,9 +140,9 @@ if signals:
         plot_signal(indices, result, "subtracted Signal")
         download_signal(indices, result, "Download Subtracted Signal", "subtracted_signal.txt")
 
-    elif option == "Delay/Advance": #x(n+k) or x(n-k)
+    elif option == "Delay/Advance": 
         k = st.number_input("Enter constant (k):", value=0)
-        indices, result = delay_advance_signal(signals[0], k)
+        indices, result = shift_signal(signals[0], k)
         plot_signal(indices, result, f"Signal shifted by {k}")
         download_signal(indices, result, f"Download Shifted Signal", f"signal_shifted_{k}.txt")
 
