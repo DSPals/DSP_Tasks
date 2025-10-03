@@ -82,7 +82,7 @@ def subtract_signals(signals):
 
 def shift_signal(signal, k):
     indices, values = signal
-    return indices + k, values
+    return indices - k, values
 
 def fold_signal(signal):
     indices, values = signal
@@ -91,6 +91,134 @@ def fold_signal(signal):
     return folded_indices[sorted_order], values[sorted_order]
 
 
+# ==========================
+# Test Functions 
+# ========================== 
+
+#!/usr/bin/env python
+# coding: utf-8
+
+def ReadSignalFile(file_name):
+    expected_indices=[]
+    expected_samples=[]
+    with open(file_name, 'r') as f:
+        line = f.readline()
+        line = f.readline()
+        line = f.readline()
+        line = f.readline()
+        while line:
+            # process line
+            L=line.strip()
+            if len(L.split(' '))==2:
+                L=line.split(' ')
+                V1=int(L[0])
+                V2=float(L[1])
+                expected_indices.append(V1)
+                expected_samples.append(V2)
+                line = f.readline()
+            else:
+                break
+    return expected_indices,expected_samples
+
+def AddSignalSamplesAreEqual(userFirstSignal,userSecondSignal,Your_indices,Your_samples):
+    if(userFirstSignal=='Signal1.txt' and userSecondSignal=='Signal2.txt'):
+        file_name=r"C:\Users\NOURAN\Downloads\Task 1 testcases and testing functions\Task 1 testcases and testing functions\add.txt"
+    expected_indices,expected_samples=ReadSignalFile(file_name)          
+    if (len(expected_samples)!=len(Your_samples)) and (len(expected_indices)!=len(Your_indices)):
+        print("Addition Test case failed, your signal have different length from the expected one")
+        return
+    for i in range(len(Your_indices)):
+        if(Your_indices[i]!=expected_indices[i]):
+            print("Addition Test case failed, your signal have different indicies from the expected one") 
+            return
+    for i in range(len(expected_samples)):
+        if abs(Your_samples[i] - expected_samples[i]) < 0.01:
+            continue
+        else:
+            print("Addition Test case failed, your signal have different values from the expected one") 
+            return
+    print("Addition Test case passed successfully")
+
+def SubSignalSamplesAreEqual(userFirstSignal,userSecondSignal,Your_indices,Your_samples):
+    if(userFirstSignal=='Signal1.txt' and userSecondSignal=='Signal2.txt'):
+        file_name=r"C:\Users\NOURAN\Downloads\Task 1 testcases and testing functions\Task 1 testcases and testing functions\subtract.txt" 
+        
+    expected_indices,expected_samples=ReadSignalFile(file_name)   
+    
+    if (len(expected_samples)!=len(Your_samples)) and (len(expected_indices)!=len(Your_indices)):
+        print("Subtraction Test case failed, your signal have different length from the expected one")
+        return
+    for i in range(len(Your_indices)):
+        if(Your_indices[i]!=expected_indices[i]):
+            print("Subtraction Test case failed, your signal have different indicies from the expected one") 
+            return
+    for i in range(len(expected_samples)):
+        if abs(Your_samples[i] - expected_samples[i]) < 0.01:
+            continue
+        else:
+            print("Subtraction Test case failed, your signal have different values from the expected one") 
+            return
+    print("Subtraction Test case passed successfully")
+    
+def MultiplySignalByConst(User_Const,Your_indices,Your_samples):
+    if(User_Const==5):
+        file_name=r"C:\Users\NOURAN\Downloads\Task 1 testcases and testing functions\Task 1 testcases and testing functions\mul5.txt"  
+        
+    expected_indices,expected_samples=ReadSignalFile(file_name)      
+    if (len(expected_samples)!=len(Your_samples)) and (len(expected_indices)!=len(Your_indices)):
+        print("Multiply by "+str(User_Const)+ " Test case failed, your signal have different length from the expected one")
+        return
+    for i in range(len(Your_indices)):
+        if(Your_indices[i]!=expected_indices[i]):
+            print("Multiply by "+str(User_Const)+" Test case failed, your signal have different indicies from the expected one") 
+            return
+    for i in range(len(expected_samples)):
+        if abs(Your_samples[i] - expected_samples[i]) < 0.01:
+            continue
+        else:
+            print("Multiply by "+str(User_Const)+" Test case failed, your signal have different values from the expected one") 
+            return
+    print("Multiply by "+str(User_Const)+" Test case passed successfully")
+
+def ShiftSignalByConst(Shift_value,Your_indices,Your_samples):
+    if(Shift_value==3):  #x(n+k)
+        file_name=r"C:\Users\NOURAN\Downloads\Task 1 testcases and testing functions\Task 1 testcases and testing functions\advance3.txt" 
+    elif(Shift_value==-3): #x(n-k)
+        file_name=r"C:\Users\NOURAN\Downloads\Task 1 testcases and testing functions\Task 1 testcases and testing functions\delay3.txt" 
+        
+    expected_indices,expected_samples=ReadSignalFile(file_name)      
+    if (len(expected_samples)!=len(Your_samples)) and (len(expected_indices)!=len(Your_indices)):
+        print("Shift by "+str(Shift_value)+" Test case failed, your signal have different length from the expected one")
+        return
+    for i in range(len(Your_indices)):
+        if(Your_indices[i]!=expected_indices[i]):
+            print("Shift by "+str(Shift_value)+" Test case failed, your signal have different indicies from the expected one") 
+            return
+    for i in range(len(expected_samples)):
+        if abs(Your_samples[i] - expected_samples[i]) < 0.01:
+            continue
+        else:
+            print("Shift by "+str(Shift_value)+" Test case failed, your signal have different values from the expected one") 
+            return
+    print("Shift by "+str(Shift_value)+" Test case passed successfully")
+
+def Folding(Your_indices,Your_samples):
+    file_name = r"C:\Users\NOURAN\Downloads\Task 1 testcases and testing functions\Task 1 testcases and testing functions\folding.txt"  
+    expected_indices,expected_samples=ReadSignalFile(file_name)      
+    if (len(expected_samples)!=len(Your_samples)) and (len(expected_indices)!=len(Your_indices)):
+        print("Folding Test case failed, your signal have different length from the expected one")
+        return
+    for i in range(len(Your_indices)):
+        if(Your_indices[i]!=expected_indices[i]):
+            print("Folding Test case failed, your signal have different indicies from the expected one") 
+            return
+    for i in range(len(expected_samples)):
+        if abs(Your_samples[i] - expected_samples[i]) < 0.01:
+            continue
+        else:
+            print("Folding Test case failed, your signal have different values from the expected one") 
+            return
+    print("Folding Test case passed successfully")
 
 # ==========================
 # GUI Functions 
@@ -127,28 +255,32 @@ if signals:
         indices, result = add_signals(signals)
         plot_signal(indices, result, "Added Signal")
         download_signal(indices, result, "Download Added Signal", "added_signal.txt")
+        AddSignalSamplesAreEqual("Signal1.txt", "Signal2.txt",indices,result) 
 
     elif option == "Multiply Signal by Constant":
-        k = st.number_input("Enter constant (k):", value=2)
+        k = st.number_input("Enter constant (k):", value=5)
         indices, result = multiply_signal(signals[0], k)
         plot_signal(indices, result, f"Signal * {k}")
         download_signal(indices, result, f"Download Signal * {k}", f"signal_times_{k}.txt")
+        MultiplySignalByConst(5,indices, result)
 
-    
     elif option == "Subtract Signals" and len(signals) > 1:
         indices, result = subtract_signals(signals)
         plot_signal(indices, result, "subtracted Signal")
         download_signal(indices, result, "Download Subtracted Signal", "subtracted_signal.txt")
+        SubSignalSamplesAreEqual("Signal1.txt", "Signal2.txt",indices,result) 
 
     elif option == "Delay/Advance": 
-        k = st.number_input("Enter constant (k):", value=0)
+        k = st.number_input("Enter constant (k):", value=-3)
         indices, result = shift_signal(signals[0], k)
         plot_signal(indices, result, f"Signal shifted by {k}")
         download_signal(indices, result, f"Download Shifted Signal", f"signal_shifted_{k}.txt")
+        ShiftSignalByConst(k,indices,result)  
 
     elif option == "Fold/Reverse":
         indices, result = fold_signal(signals[0])
         plot_signal(indices, result, "Folded Signal")
         download_signal(indices, result, "Download Folded Signal", "folded_signal.txt")
+        Folding(indices,result)  
 
-    
+
