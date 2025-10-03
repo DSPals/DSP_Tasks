@@ -1,6 +1,7 @@
 import streamlit as st
 import matplotlib.pyplot as plt
 import numpy as np
+import io
 
 # ==========================
 # Utility Function -temp- (can not make read from uploading locally & without using streamlit cloud so GPT suggested this)
@@ -42,6 +43,20 @@ def plot_signal(indices, values, title="Signal"):
     ax.set_ylabel("x[n]")
     ax.grid(True, which="both")
     st.pyplot(fig)
+
+
+def download_signal(indices, values, label="Download Result", default_name="output.txt"):
+    buffer = io.StringIO()
+    buffer.write(f"{len(values)}\n")
+    for i, v in zip(indices, values):
+        buffer.write(f"{i} {v}\n")
+    st.download_button(
+        label=label,
+        data=buffer.getvalue(),
+        file_name=default_name,
+        mime="text/plain"
+    )
+
 
 def add_signals(signals):
     result_dict = {}
@@ -128,22 +143,29 @@ if signals:
     if option == "Add Signals" and len(signals) > 1:
         indices, result = add_signals(signals)
         plot_signal(indices, result, "Added Signal")
+        download_signal(indices, result, "Download Added Signal", "added_signal.txt")
 
     elif option == "Multiply Signal by Constant":
         k = st.number_input("Enter constant (k):", value=2)
         indices, result = multiply_signal(signals[0], k)
         plot_signal(indices, result, f"Signal * {k}")
+        download_signal(indices, result, f"Download Signal * {k}", f"signal_times_{k}.txt")
+
     
     elif option == "Subtract Signals" and len(signals) > 1:
         indices, result = subtract_signals(signals)
         plot_signal(indices, result, "subtracted Signal")
+        download_signal(indices, result, "Download Subtracted Signal", "subtracted_signal.txt")
 
     elif option == "Delay/Advance": #x(n+k) or x(n-k)
         k = st.number_input("Enter constant (k):", value=0)
         indices, result = delay_advance_signal(signals[0], k)
         plot_signal(indices, result, f"Signal shifted by {k}")
+        download_signal(indices, result, f"Download Shifted Signal", f"signal_shifted_{k}.txt")
 
     elif option == "Fold/Reverse":
         indices, result = fold_signal(signals[0])
         plot_signal(indices, result, "Folded Signal")
+        download_signal(indices, result, "Download Folded Signal", "folded_signal.txt")
+
     
