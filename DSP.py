@@ -6,10 +6,14 @@ import numpy as np
 # Utility Function -temp- (can not make read from uploading locally & without using streamlit cloud so GPT suggested this)
 # ========================== 
 
-def read_signal(path):
-    """Read a signal from a txt file with possible extra header lines"""
-    with open(path, "r") as f:
-        content = f.read().strip().split("\n")
+def read_signal(file):
+    """Read a signal from a txt file (works for both uploaded file and path)."""
+    # Handle Streamlit uploaded file (BytesIO)
+    if hasattr(file, "read"):  
+        content = file.read().decode("utf-8").strip().split("\n")
+    else:  # Normal path string
+        with open(file, "r") as f:
+            content = f.read().strip().split("\n")
 
     # clean lines
     content = [line.strip() for line in content if line.strip()]
@@ -38,9 +42,6 @@ def plot_signal(indices, values, title="Signal"):
     ax.set_ylabel("x[n]")
     ax.grid(True, which="both")
     st.pyplot(fig)
-
-
-
 
 def add_signals(signals):
     result_dict = {}
@@ -84,22 +85,33 @@ def fold_signal(signal):
 
 st.title("DSP")
 
-signal_paths = [
-    r"C:\Users\NOURAN\Downloads\Task 1 testcases and testing functions\Task 1 testcases and testing functions\Signal1.txt",
-    r"C:\Users\NOURAN\Downloads\Task 1 testcases and testing functions\Task 1 testcases and testing functions\Signal2.txt",
-]
+# File uploader
+uploaded_files = st.file_uploader("Upload signal files", type=["txt"], accept_multiple_files=True)
+
+signals = []
+if uploaded_files:
+    for uploaded_file in uploaded_files:
+        indices, values = read_signal(uploaded_file)
+        signals.append((indices, values))
+        st.write(f"Loaded `{uploaded_file.name}` with {len(values)} samples")
+        plot_signal(indices, values, title=f"{uploaded_file.name}")
+
+# signal_paths = [
+#     r"C:\Users\NOURAN\Downloads\Task 1 testcases and testing functions\Task 1 testcases and testing functions\Signal1.txt",
+#     r"C:\Users\NOURAN\Downloads\Task 1 testcases and testing functions\Task 1 testcases and testing functions\Signal2.txt",
+# ]
 
 # signal_paths = [
 #     "D:\Downloads\Task 1 testcases and testing functions\Task 1 testcases and testing functions\Signal1.txt",
 #     "D:\Downloads\Task 1 testcases and testing functions\Task 1 testcases and testing functions\Signal2.txt",
 # ]
 
-signals = []
-for path in signal_paths:
-    indices, values = read_signal(path)
-    signals.append((indices, values))
-    st.write(f"Loaded {path} with {len(values)} samples")
-    plot_signal(indices, values, title=f"Original Signal")
+# signals = []
+# for path in signal_paths:
+#     indices, values = read_signal(path)
+#     signals.append((indices, values))
+#     st.write(f"Loaded {path} with {len(values)} samples")
+#     plot_signal(indices, values, title=f"Original Signal")
 
 if signals:
     option = st.selectbox(
