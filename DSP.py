@@ -32,6 +32,7 @@ def read_signal(file):
     indices, values = zip(*data)
     return np.array(indices), np.array(values)
 
+######### update this for task 2 ########
 def plot_signal(indices, values, title="Signal"):
     fig, ax = plt.subplots()
     ax.stem(indices, values)  
@@ -122,7 +123,7 @@ def ReadSignalFile(file_name):
 
 def AddSignalSamplesAreEqual(userFirstSignal,userSecondSignal,Your_indices,Your_samples):
     if(userFirstSignal=='Signal1.txt' and userSecondSignal=='Signal2.txt'):
-        file_name=r"C:\Users\NOURAN\Downloads\Task 1 testcases and testing functions\Task 1 testcases and testing functions\add.txt"
+        file_name=r"D:\Downloads\Task 1 testcases and testing functions\Task 1 testcases and testing functions\add.txt"
     expected_indices,expected_samples=ReadSignalFile(file_name)          
     if (len(expected_samples)!=len(Your_samples)) and (len(expected_indices)!=len(Your_indices)):
         print("Addition Test case failed, your signal have different length from the expected one")
@@ -141,7 +142,7 @@ def AddSignalSamplesAreEqual(userFirstSignal,userSecondSignal,Your_indices,Your_
 
 def SubSignalSamplesAreEqual(userFirstSignal,userSecondSignal,Your_indices,Your_samples):
     if(userFirstSignal=='Signal1.txt' and userSecondSignal=='Signal2.txt'):
-        file_name=r"C:\Users\NOURAN\Downloads\Task 1 testcases and testing functions\Task 1 testcases and testing functions\subtract.txt" 
+        file_name=r"D:\Downloads\Task 1 testcases and testing functions\Task 1 testcases and testing functions\subtract.txt"
         
     expected_indices,expected_samples=ReadSignalFile(file_name)   
     
@@ -162,7 +163,7 @@ def SubSignalSamplesAreEqual(userFirstSignal,userSecondSignal,Your_indices,Your_
     
 def MultiplySignalByConst(User_Const,Your_indices,Your_samples):
     if(User_Const==5):
-        file_name=r"C:\Users\NOURAN\Downloads\Task 1 testcases and testing functions\Task 1 testcases and testing functions\mul5.txt"  
+        file_name=r"D:\Downloads\Task 1 testcases and testing functions\Task 1 testcases and testing functions\mul5.txt" 
         
     expected_indices,expected_samples=ReadSignalFile(file_name)      
     if (len(expected_samples)!=len(Your_samples)) and (len(expected_indices)!=len(Your_indices)):
@@ -182,9 +183,9 @@ def MultiplySignalByConst(User_Const,Your_indices,Your_samples):
 
 def ShiftSignalByConst(Shift_value,Your_indices,Your_samples):
     if(Shift_value==3):  #x(n+k)
-        file_name=r"C:\Users\NOURAN\Downloads\Task 1 testcases and testing functions\Task 1 testcases and testing functions\advance3.txt" 
+        file_name=r"D:\Downloads\Task 1 testcases and testing functions\Task 1 testcases and testing functions\advance3.txt" 
     elif(Shift_value==-3): #x(n-k)
-        file_name=r"C:\Users\NOURAN\Downloads\Task 1 testcases and testing functions\Task 1 testcases and testing functions\delay3.txt" 
+        file_name=r"D:\Downloads\Task 1 testcases and testing functions\Task 1 testcases and testing functions\delay3.txt"
         
     expected_indices,expected_samples=ReadSignalFile(file_name)      
     if (len(expected_samples)!=len(Your_samples)) and (len(expected_indices)!=len(Your_indices)):
@@ -203,7 +204,7 @@ def ShiftSignalByConst(Shift_value,Your_indices,Your_samples):
     print("Shift by "+str(Shift_value)+" Test case passed successfully")
 
 def Folding(Your_indices,Your_samples):
-    file_name = r"C:\Users\NOURAN\Downloads\Task 1 testcases and testing functions\Task 1 testcases and testing functions\folding.txt"  
+    file_name = r"D:\Downloads\Task 1 testcases and testing functions\Task 1 testcases and testing functions\folding.txt"
     expected_indices,expected_samples=ReadSignalFile(file_name)      
     if (len(expected_samples)!=len(Your_samples)) and (len(expected_indices)!=len(Your_indices)):
         print("Folding Test case failed, your signal have different length from the expected one")
@@ -228,59 +229,85 @@ def Folding(Your_indices,Your_samples):
 
 st.title("DSP Signal Processor")
 
+menu = st.sidebar.radio("Main Menu", ["Signal Operations", "Signal Generation"])
+
+display_mode = st.sidebar.selectbox("Display Mode", ["Discrete", "Continuous"])
+
 # File uploader
-uploaded_files = st.file_uploader("Upload signal files", type=["txt"], accept_multiple_files=True)
+if menu == "Signal Operations":
+    uploaded_files = st.file_uploader("Upload signal files", type=["txt"], accept_multiple_files=True)
 
-signals = []
-if uploaded_files:
-    for uploaded_file in uploaded_files:
-        indices, values = read_signal(uploaded_file)
-        signals.append((indices, values))
-        st.write(f"Loaded `{uploaded_file.name}` with {len(values)} samples")
-        plot_signal(indices, values, title=f"{uploaded_file.name}")
+    signals = []
+    if uploaded_files:
+        for uploaded_file in uploaded_files:
+            indices, values = read_signal(uploaded_file)
+            signals.append((indices, values))
+            st.write(f"Loaded `{uploaded_file.name}` with {len(values)} samples")
+            plot_signal(indices, values, title=f"{uploaded_file.name}")
 
-if signals:
-    option = st.selectbox(
-        "Choose Operation",
-        [
-            "Add Signals",
-            "Multiply Signal by Constant",
-            "Subtract Signals",
-            "Delay/Advance",
-            "Fold/Reverse",
-        ],
-    )
+    if signals:
+        option = st.selectbox(
+            "Choose Operation",
+            [
+                "Add Signals",
+                "Multiply Signal by Constant",
+                "Subtract Signals",
+                "Delay/Advance",
+                "Fold/Reverse",
+                "Compare Two Signals"
+            ],
+        )
 
-    if option == "Add Signals" and len(signals) > 1:
-        indices, result = add_signals(signals)
-        plot_signal(indices, result, "Added Signal")
-        download_signal(indices, result, "Download Added Signal", "added_signal.txt")
-        AddSignalSamplesAreEqual("Signal1.txt", "Signal2.txt",indices,result) 
+        if option == "Add Signals" and len(signals) > 1:
+            indices, result = add_signals(signals)
+            plot_signal(indices, result, "Added Signal")
+            download_signal(indices, result, "Download Added Signal", "added_signal.txt")
+            AddSignalSamplesAreEqual("Signal1.txt", "Signal2.txt",indices,result) 
 
-    elif option == "Multiply Signal by Constant":
-        k = st.number_input("Enter constant (k):", value=5)
-        indices, result = multiply_signal(signals[0], k)
-        plot_signal(indices, result, f"Signal * {k}")
-        download_signal(indices, result, f"Download Signal * {k}", f"signal_times_{k}.txt")
-        MultiplySignalByConst(5,indices, result)
+        elif option == "Multiply Signal by Constant":
+            k = st.number_input("Enter constant (k):", value=2.0)
+            indices, result = multiply_signal(signals[0], k)
+            plot_signal(indices, result, f"Signal * {k}")
+            download_signal(indices, result, f"Download Signal * {k}", f"signal_times_{k}.txt")
+            MultiplySignalByConst(5,indices, result)
 
-    elif option == "Subtract Signals" and len(signals) > 1:
-        indices, result = subtract_signals(signals)
-        plot_signal(indices, result, "subtracted Signal")
-        download_signal(indices, result, "Download Subtracted Signal", "subtracted_signal.txt")
-        SubSignalSamplesAreEqual("Signal1.txt", "Signal2.txt",indices,result) 
+        elif option == "Subtract Signals" and len(signals) > 1:
+            indices, result = subtract_signals(signals)
+            plot_signal(indices, result, "Subtracted Signal")
+            download_signal(indices, result, "Download Subtracted Signal", "subtracted_signal.txt")
+            SubSignalSamplesAreEqual("Signal1.txt", "Signal2.txt",indices,result) 
 
-    elif option == "Delay/Advance": 
-        k = st.number_input("Enter constant (k):", value=-3)
-        indices, result = shift_signal(signals[0], k)
-        plot_signal(indices, result, f"Signal shifted by {k}")
-        download_signal(indices, result, f"Download Shifted Signal", f"signal_shifted_{k}.txt")
-        ShiftSignalByConst(k,indices,result)  
+        elif option == "Delay/Advance":
+            k = st.number_input("Enter shift value (k):", value=-3)
+            indices, result = shift_signal(signals[0], k)
+            plot_signal(indices, result, f"Signal shifted by {k}")
+            download_signal(indices, result, "Download Shifted Signal", f"signal_shifted_{k}.txt")
+            ShiftSignalByConst(k,indices,result)  
 
-    elif option == "Fold/Reverse":
-        indices, result = fold_signal(signals[0])
-        plot_signal(indices, result, "Folded Signal")
-        download_signal(indices, result, "Download Folded Signal", "folded_signal.txt")
-        Folding(indices,result)  
+
+        elif option == "Fold/Reverse":
+            indices, result = fold_signal(signals[0])
+            plot_signal(indices, result, "Folded Signal")
+            download_signal(indices, result, "Download Folded Signal", "folded_signal.txt")
+            Folding(indices,result)  
+            
+## uncomment this we nkml shogl
+#elif menu == "Signal Generation":   
+             
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
