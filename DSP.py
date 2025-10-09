@@ -32,15 +32,38 @@ def read_signal(file):
     indices, values = zip(*data)
     return np.array(indices), np.array(values)
 
-######### update this for task 2 ########
-def plot_signal(indices, values, title="Signal"):
+def plot_signal(indices, values, title="Signal", mode="Discrete", second_signal=None):
     fig, ax = plt.subplots()
-    ax.stem(indices, values)  
+
+    if mode == "Continuous":
+        ax.plot(indices, values, label=title, color="b")
+    elif mode == "Discrete":
+        ax.stem(indices, values, linefmt="b-", markerfmt="bo", basefmt="k-", label=title)
+    elif mode == "Discrete + Continuous":
+        ax.plot(indices, values, color="b", alpha=0.6, label=f"{title} (Continuous)")
+        ax.stem(indices, values, linefmt="g-", markerfmt="go", basefmt="k-",
+                label=f"{title} (Discrete)")
+
+    #### this part for displaying 2 signals at the same time ####
+    if second_signal:
+        idx2, val2, label2 = second_signal
+        if mode == "Continuous":
+            ax.plot(idx2, val2, label=label2, color='orange')
+        elif mode == "Discrete":
+            ax.stem(idx2, val2, linefmt="r-", markerfmt="ro", basefmt="k-", label=label2)
+        elif mode == "Discrete + Continuous":
+            ax.plot(idx2, val2, color="r", alpha=0.6, label=f"{label2} (Continuous)")
+            ax.stem(idx2, val2, linefmt="r-", markerfmt="ro", basefmt="k-",
+                    label=f"{label2} (Discrete)")
+    ######################                  ##################
+    
     ax.set_title(title)
-    ax.set_xlabel("n")
+    ax.set_xlabel("n (samples)")
     ax.set_ylabel("x[n]")
     ax.grid(True, which="both")
+    ax.legend()
     st.pyplot(fig)
+
 
 def download_signal(indices, values, label="Download Result", default_name="output.txt"):
     buffer = io.StringIO()
@@ -231,7 +254,7 @@ st.title("DSP Signal Processor")
 
 menu = st.sidebar.radio("Main Menu", ["Signal Operations", "Signal Generation"])
 
-display_mode = st.sidebar.selectbox("Display Mode", ["Discrete", "Continuous"])
+display_mode = st.sidebar.selectbox("Display Mode", ["Discrete", "Continuous", "Discrete + Continuous"])
 
 # File uploader
 if menu == "Signal Operations":
@@ -254,7 +277,7 @@ if menu == "Signal Operations":
                 "Subtract Signals",
                 "Delay/Advance",
                 "Fold/Reverse",
-                "Compare Two Signals"
+                "Two Signals at the Same Time"
             ],
         )
 
@@ -290,6 +313,13 @@ if menu == "Signal Operations":
             plot_signal(indices, result, "Folded Signal")
             download_signal(indices, result, "Download Folded Signal", "folded_signal.txt")
             Folding(indices,result)  
+
+
+        elif option == "Two Signals at the Same Time" and len(signals) >= 2:
+            sig1, sig2 = signals[0], signals[1]
+            plot_signal(sig1[0], sig1[1], "Signal Comparison", mode=display_mode,
+                        second_signal=(sig2[0], sig2[1], "Signal 2"))
+
             
 ## uncomment this we nkml shogl
 #elif menu == "Signal Generation":   
