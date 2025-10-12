@@ -266,7 +266,7 @@ if menu == "Signal Operations":
             indices, values = read_signal(uploaded_file)
             signals.append((indices, values))
             st.write(f"Loaded `{uploaded_file.name}` with {len(values)} samples")
-            plot_signal(indices, values, title=f"{uploaded_file.name}")
+            plot_signal(indices, values, title=f"{uploaded_file.name}", mode=display_mode)
 
     if signals:
         option = st.selectbox(
@@ -283,43 +283,35 @@ if menu == "Signal Operations":
 
         if option == "Add Signals" and len(signals) > 1:
             indices, result = add_signals(signals)
-            plot_signal(indices, result, "Added Signal")
+            plot_signal(indices, result, "Added Signal", mode=display_mode)
             download_signal(indices, result, "Download Added Signal", "added_signal.txt")
-            AddSignalSamplesAreEqual("Signal1.txt", "Signal2.txt",indices,result) 
 
         elif option == "Multiply Signal by Constant":
             k = st.number_input("Enter constant (k):", value=2.0)
             indices, result = multiply_signal(signals[0], k)
-            plot_signal(indices, result, f"Signal * {k}")
+            plot_signal(indices, result, f"Signal * {k}", mode=display_mode)
             download_signal(indices, result, f"Download Signal * {k}", f"signal_times_{k}.txt")
-            MultiplySignalByConst(5,indices, result)
 
         elif option == "Subtract Signals" and len(signals) > 1:
             indices, result = subtract_signals(signals)
-            plot_signal(indices, result, "Subtracted Signal")
+            plot_signal(indices, result, "Subtracted Signal", mode=display_mode)
             download_signal(indices, result, "Download Subtracted Signal", "subtracted_signal.txt")
-            SubSignalSamplesAreEqual("Signal1.txt", "Signal2.txt",indices,result) 
 
         elif option == "Delay/Advance":
             k = st.number_input("Enter shift value (k):", value=-3)
             indices, result = shift_signal(signals[0], k)
-            plot_signal(indices, result, f"Signal shifted by {k}")
+            plot_signal(indices, result, f"Signal shifted by {k}", mode=display_mode)
             download_signal(indices, result, "Download Shifted Signal", f"signal_shifted_{k}.txt")
-            ShiftSignalByConst(k,indices,result)  
-
 
         elif option == "Fold/Reverse":
             indices, result = fold_signal(signals[0])
-            plot_signal(indices, result, "Folded Signal")
+            plot_signal(indices, result, "Folded Signal", mode=display_mode)
             download_signal(indices, result, "Download Folded Signal", "folded_signal.txt")
-            Folding(indices,result)  
-
 
         elif option == "Two Signals at the Same Time" and len(signals) >= 2:
             sig1, sig2 = signals[0], signals[1]
             plot_signal(sig1[0], sig1[1], "Signal Comparison", mode=display_mode,
                         second_signal=(sig2[0], sig2[1], "Signal 2"))
-
             
 ## uncomment this we nkml shogl
 #elif menu == "Signal Generation":   
