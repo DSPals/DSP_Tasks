@@ -32,7 +32,7 @@ def read_signal(file):
     indices, values = zip(*data)
     return np.array(indices), np.array(values)
 
-def plot_signal(indices, values, title="Signal", mode="Discrete", second_signal=None):
+def plot_signal(indices, values, title="Signal", mode="Discrete", second_signal=None, generate_state=None):
     fig, ax = plt.subplots()
 
     if mode == "Continuous":
@@ -58,8 +58,16 @@ def plot_signal(indices, values, title="Signal", mode="Discrete", second_signal=
     ######################                  ##################
     
     ax.set_title(title)
-    ax.set_xlabel("n (samples)")
-    ax.set_ylabel("x[n]")
+    if generate_state == "Signal":
+        ax.set_xlabel("t (seconds)")
+        ax.set_ylabel("x[t]")
+    elif generate_state == "Sampled":
+        ax.set_xlabel("n (samples)")
+        ax.set_ylabel("x[n]")
+    else: 
+        ax.set_xlabel("n (samples)")
+        ax.set_ylabel("x[n]")
+
     ax.grid(True, which="both")
     ax.legend()
     st.pyplot(fig)
@@ -393,9 +401,9 @@ elif menu == "Signal Generation":
     if generate_button:
         st.info(f"Generating {wave_type.lower()} with A={amplitude}, θ={phase}, f={analog_freq}, fs={sampling_freq}, duration={duration}")
         indices, result = generate_analog_signal(wave_type, amplitude, phase, analog_freq, duration)
-        plot_signal(indices, result, f"{wave_type} Signal", mode="Continuous")
+        plot_signal(indices, result, f"{wave_type} Signal", mode="Continuous",generate_state="Signal")
         indices, result = generate_discrete_signal(wave_type, amplitude, phase, analog_freq, sampling_freq, duration)
-        plot_signal(indices, result, f"{wave_type} Signal", mode=display_mode)
+        plot_signal(indices, result, f"{wave_type} Signal", mode=display_mode,generate_state="Sampled")
 
     else:
         st.write("Adjust parameters above and ensure Nyquist condition is satisfied to enable generation.")
