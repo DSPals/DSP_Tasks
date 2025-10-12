@@ -64,7 +64,6 @@ def plot_signal(indices, values, title="Signal", mode="Discrete", second_signal=
     ax.legend()
     st.pyplot(fig)
 
-
 def download_signal(indices, values, label="Download Result", default_name="output.txt"):
     buffer = io.StringIO()
     buffer.write(f"{len(values)}\n")
@@ -112,6 +111,37 @@ def fold_signal(signal):
     folded_indices = -indices
     sorted_order = np.argsort(folded_indices)
     return folded_indices[sorted_order], values[sorted_order]
+
+
+def generate_analog_signal(wave_type, amplitude, phase, analog_freq, duration):
+    
+    analog_freq = float(analog_freq)
+    duration = float(duration)
+
+    t = np.linspace(0, duration, 5000)
+    if wave_type == "Sine Wave":
+        x = amplitude * np.sin(2 * np.pi * analog_freq * t + phase)
+    else:
+        x = amplitude * np.cos(2 * np.pi * analog_freq * t + phase)
+    return t, x
+
+def generate_discrete_signal(wave_type, amplitude, phase, analog_freq, sampling_freq, duration):
+
+    analog_freq = float(analog_freq)
+    sampling_freq = float(sampling_freq)
+    duration = float(duration)
+    
+    # Generate discrete-time sample indices
+    n = np.arange(0, int(duration * sampling_freq))
+    
+    omega = 2 * np.pi * analog_freq / sampling_freq  
+    
+    if wave_type == "Sine Wave":
+        x = amplitude * np.sin(omega * n + phase)
+    else:
+        x = amplitude * np.cos(omega * n + phase)
+
+    return n, x
 
 
 # ==========================
@@ -284,34 +314,34 @@ if menu == "Signal Operations":
             indices, result = add_signals(signals)
             plot_signal(indices, result, "Added Signal", mode=display_mode)
             download_signal(indices, result, "Download Added Signal", "added_signal.txt")
-         #   AddSignalSamplesAreEqual("Signal1.txt", "Signal2.txt",indices,result) 
+            AddSignalSamplesAreEqual("Signal1.txt", "Signal2.txt",indices,result) 
 
         elif option == "Multiply Signal by Constant":
             k = st.number_input("Enter constant (k):", value=2.0)
             indices, result = multiply_signal(signals[0], k)
             plot_signal(indices, result, f"Signal * {k}", mode=display_mode)
             download_signal(indices, result, f"Download Signal * {k}", f"signal_times_{k}.txt")
-         #   MultiplySignalByConst(5,indices, result)
+            MultiplySignalByConst(5,indices, result)
 
         elif option == "Subtract Signals" and len(signals) > 1:
             indices, result = subtract_signals(signals)
             plot_signal(indices, result, "Subtracted Signal", mode=display_mode)
             download_signal(indices, result, "Download Subtracted Signal", "subtracted_signal.txt")
-          #  SubSignalSamplesAreEqual("Signal1.txt", "Signal2.txt",indices,result) 
+            SubSignalSamplesAreEqual("Signal1.txt", "Signal2.txt",indices,result) 
 
         elif option == "Delay/Advance":
             k = st.number_input("Enter shift value (k):", value=-3)
             indices, result = shift_signal(signals[0], k)
             plot_signal(indices, result, f"Signal shifted by {k}", mode=display_mode)
             download_signal(indices, result, "Download Shifted Signal", f"signal_shifted_{k}.txt")
-           # ShiftSignalByConst(k,indices,result)  
+            ShiftSignalByConst(k,indices,result)  
 
 
         elif option == "Fold/Reverse":
             indices, result = fold_signal(signals[0])
             plot_signal(indices, result, "Folded Signal", mode=display_mode)
             download_signal(indices, result, "Download Folded Signal", "folded_signal.txt")
-           # Folding(indices,result)  
+            Folding(indices,result)  
 
 
         elif option == "Two Signals at the Same Time" and len(signals) >= 2:
@@ -322,7 +352,6 @@ if menu == "Signal Operations":
 elif menu == "Signal Generation":     
     st.header("Signal Generation")
 
-    # Wave type selector
     wave_type = st.radio(
         "Select Wave Type",
         ["Sine Wave", "Cosine Wave"],
@@ -360,11 +389,14 @@ elif menu == "Signal Generation":
 
     st.markdown("---")
 
-    # Placeholder for preview (no logic yet)
     st.subheader("Signal Preview")
     if generate_button:
         st.info(f"Generating {wave_type.lower()} with A={amplitude}, θ={phase}, f={analog_freq}, fs={sampling_freq}, duration={duration}")
-        st.write("🔧 (Signal generation logic will appear here soon...)")
+        indices, result = generate_analog_signal(wave_type, amplitude, phase, analog_freq, duration)
+        plot_signal(indices, result, f"{wave_type} Signal", mode="Continuous")
+        indices, result = generate_discrete_signal(wave_type, amplitude, phase, analog_freq, sampling_freq, duration)
+        plot_signal(indices, result, f"{wave_type} Signal", mode=display_mode)
+
     else:
         st.write("Adjust parameters above and ensure Nyquist condition is satisfied to enable generation.")
 
