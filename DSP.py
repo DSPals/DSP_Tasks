@@ -103,7 +103,6 @@ def subtract_signals(signals):
         result = add_signals([result, neg_sig])
     return result
 
-
 def shift_signal(signal, k):
     indices, values = signal
     return indices - k, values
@@ -285,34 +284,34 @@ if menu == "Signal Operations":
             indices, result = add_signals(signals)
             plot_signal(indices, result, "Added Signal")
             download_signal(indices, result, "Download Added Signal", "added_signal.txt")
-            AddSignalSamplesAreEqual("Signal1.txt", "Signal2.txt",indices,result) 
+         #   AddSignalSamplesAreEqual("Signal1.txt", "Signal2.txt",indices,result) 
 
         elif option == "Multiply Signal by Constant":
             k = st.number_input("Enter constant (k):", value=2.0)
             indices, result = multiply_signal(signals[0], k)
             plot_signal(indices, result, f"Signal * {k}")
             download_signal(indices, result, f"Download Signal * {k}", f"signal_times_{k}.txt")
-            MultiplySignalByConst(5,indices, result)
+         #   MultiplySignalByConst(5,indices, result)
 
         elif option == "Subtract Signals" and len(signals) > 1:
             indices, result = subtract_signals(signals)
             plot_signal(indices, result, "Subtracted Signal")
             download_signal(indices, result, "Download Subtracted Signal", "subtracted_signal.txt")
-            SubSignalSamplesAreEqual("Signal1.txt", "Signal2.txt",indices,result) 
+          #  SubSignalSamplesAreEqual("Signal1.txt", "Signal2.txt",indices,result) 
 
         elif option == "Delay/Advance":
             k = st.number_input("Enter shift value (k):", value=-3)
             indices, result = shift_signal(signals[0], k)
             plot_signal(indices, result, f"Signal shifted by {k}")
             download_signal(indices, result, "Download Shifted Signal", f"signal_shifted_{k}.txt")
-            ShiftSignalByConst(k,indices,result)  
+           # ShiftSignalByConst(k,indices,result)  
 
 
         elif option == "Fold/Reverse":
             indices, result = fold_signal(signals[0])
             plot_signal(indices, result, "Folded Signal")
             download_signal(indices, result, "Download Folded Signal", "folded_signal.txt")
-            Folding(indices,result)  
+           # Folding(indices,result)  
 
 
         elif option == "Two Signals at the Same Time" and len(signals) >= 2:
@@ -321,9 +320,55 @@ if menu == "Signal Operations":
                         second_signal=(sig2[0], sig2[1], "Signal 2"))
 
             
-## uncomment this we nkml shogl
-#elif menu == "Signal Generation":   
-             
+elif menu == "Signal Generation":     
+    st.header("Signal Generation")
+
+    # Wave type selector
+    wave_type = st.radio(
+        "Select Wave Type",
+        ["Sine Wave", "Cosine Wave"],
+        horizontal=True
+    )
+
+    st.markdown("### Configure Your Signal Parameters")
+
+    col1, col2 = st.columns(2)
+    with col1:
+        amplitude = st.number_input("Amplitude (A)", value=1.0, step=0.1, min_value=0.0)
+        phase = st.number_input("Phase Shift (θ) [in radians]", value=0.0, step=0.1)
+    with col2:
+        analog_freq = st.number_input("Analog Frequency (Hz)", value=1.0, step=0.1, min_value=0.0)
+        sampling_freq = st.number_input("Sampling Frequency (Hz)", value=10.0, step=0.1, min_value=0.0)
+
+    st.markdown("---")
+    col3, col4 = st.columns([1, 2])
+    with col3:
+        duration = st.number_input("Signal Duration (seconds)", value=1.0, step=0.1, min_value=0.1)
+    with col4:
+        st.empty()
+
+    # Check Nyquist theorem
+    if sampling_freq < 2 * analog_freq:
+        st.error(
+            f"❌ Sampling frequency must be at least **2 × Analog Frequency** "
+            f"to satisfy the Nyquist theorem.\n\n"
+            f"Currently: 2 × {analog_freq} = {2*analog_freq}, but Sampling = {sampling_freq}"
+        )
+        generate_button = st.button("Generate Signal", disabled=True)
+    else:
+        st.success("✅ Parameters satisfy the Nyquist theorem. You can generate the signal!")
+        generate_button = st.button("Generate Signal")
+
+    st.markdown("---")
+
+    # Placeholder for preview (no logic yet)
+    st.subheader("Signal Preview")
+    if generate_button:
+        st.info(f"Generating {wave_type.lower()} with A={amplitude}, θ={phase}, f={analog_freq}, fs={sampling_freq}, duration={duration}")
+        st.write("🔧 (Signal generation logic will appear here soon...)")
+    else:
+        st.write("Adjust parameters above and ensure Nyquist condition is satisfied to enable generation.")
+
 
 
 
