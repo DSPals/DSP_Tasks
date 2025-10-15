@@ -32,19 +32,19 @@ def read_signal(file):
     indices, values = zip(*data)
     return np.array(indices), np.array(values)
 
-def plot_signal(indices, values, title="Signal", mode="Discrete", second_signal=None, generate_state=None):
+def plot_signal(indices, values, title="Signal", mode="Discrete", second_signal=None):
     fig, ax = plt.subplots()
 
+    # ---- First signal ----
     if mode == "Continuous":
         ax.plot(indices, values, label=title, color="b")
     elif mode == "Discrete":
         ax.stem(indices, values, linefmt="b-", markerfmt="bo", basefmt="k-", label=title)
     elif mode == "Discrete + Continuous":
         ax.plot(indices, values, color="b", alpha=0.6, label=f"{title} (Continuous)")
-        ax.stem(indices, values, linefmt="g-", markerfmt="go", basefmt="k-",
-                label=f"{title} (Discrete)")
+        ax.stem(indices, values, linefmt="g-", markerfmt="go", basefmt="k-", label=f"{title} (Discrete)")
 
-    #### this part for displaying 2 signals at the same time ####
+    # ---- Second signal (optional) ----
     if second_signal:
         idx2, val2, label2 = second_signal
         if mode == "Continuous":
@@ -53,24 +53,71 @@ def plot_signal(indices, values, title="Signal", mode="Discrete", second_signal=
             ax.stem(idx2, val2, linefmt="r-", markerfmt="ro", basefmt="k-", label=label2)
         elif mode == "Discrete + Continuous":
             ax.plot(idx2, val2, color="r", alpha=0.6, label=f"{label2} (Continuous)")
-            ax.stem(idx2, val2, linefmt="r-", markerfmt="ro", basefmt="k-",
-                    label=f"{label2} (Discrete)")
-    ######################                  ##################
-    
-    ax.set_title(title)
-    if generate_state == "Signal":
+            ax.stem(idx2, val2, linefmt="r-", markerfmt="ro", basefmt="k-", label=f"{label2} (Discrete)")
+
+    # ---- Automatic axis labels ----
+    if mode == "Continuous":
         ax.set_xlabel("t (seconds)")
         ax.set_ylabel("x[t]")
-    elif generate_state == "Sampled":
+    elif mode == "Discrete":
         ax.set_xlabel("n (samples)")
         ax.set_ylabel("x[n]")
-    else: 
-        ax.set_xlabel("n (samples)")
-        ax.set_ylabel("x[n]")
+    elif mode == "Discrete + Continuous":
+        ax.set_xlabel("t / n (time or sample index)")
+        ax.set_ylabel("x[t], x[n]")
 
+    ax.set_title(title)
     ax.grid(True, which="both")
     ax.legend()
     st.pyplot(fig)
+
+
+def plot_multiple_signals(signals, mode="Discrete"):
+    
+    fig, ax = plt.subplots()
+
+    colors = plt.cm.tab10(np.linspace(0, 1, len(signals)))
+    markers = ["o", "s", "v", "^", "D", "x", "+", "*", "p", "h"]
+
+    for i, sig in enumerate(signals):
+        # Handle optional label
+        if len(sig) == 3:
+            indices, values, label = sig
+        else:
+            indices, values = sig
+            label = f"Signal {i+1}"
+
+        color = colors[i % len(colors)]
+        marker = markers[i % len(markers)]
+
+        if mode == "Continuous":
+            ax.plot(indices, values, label=label, color=color)
+        elif mode == "Discrete":
+            markerline, stemlines, baseline = ax.stem(indices, values, basefmt="k-", label=label)
+            plt.setp(markerline, color=color, marker=marker)
+            plt.setp(stemlines, color=color)
+        elif mode == "Discrete + Continuous":
+            ax.plot(indices, values, color=color, alpha=0.6, label=f"{label} (Continuous)")
+            markerline, stemlines, baseline = ax.stem(indices, values, basefmt="k-", label=f"{label} (Discrete)")
+            plt.setp(markerline, color=color, marker=marker)
+            plt.setp(stemlines, color=color)
+
+    # Axis labels
+    if mode == "Continuous":
+        ax.set_xlabel("t (seconds)")
+        ax.set_ylabel("x[t]")
+    elif mode == "Discrete":
+        ax.set_xlabel("n (samples)")
+        ax.set_ylabel("x[n]")
+    else:
+        ax.set_xlabel("t / n (time or sample index)")
+        ax.set_ylabel("x[t], x[n]")
+
+    ax.set_title("All Signals Comparison")
+    ax.grid(True, which="both")
+    ax.legend()
+    st.pyplot(fig)
+
 
 def download_signal(indices, values, label="Download Result", default_name="output.txt"):
     buffer = io.StringIO()
@@ -352,10 +399,10 @@ if menu == "Signal Operations":
             Folding(indices,result)  
 
 
-        elif option == "Two Signals at the Same Time" and len(signals) >= 2:
-            sig1, sig2 = signals[0], signals[1]
-            plot_signal(sig1[0], sig1[1], "Signal Comparison", mode=display_mode,
-                        second_signal=(sig2[0], sig2[1], "Signal 2"))
+        elif option == "Signals at the Same Time" and len(signals) >= 2:
+                labeled_signals = [(indices, values, uploaded_files[i].name if i < len(uploaded_files) else f"Signal {i+1}")
+                                   for i, (indices, values) in enumerate(signals)]
+                plot_multiple_signals(labeled_signals, mode=display_mode)
             
 elif menu == "Signal Generation":     
     st.header("Signal Generation")
@@ -400,11 +447,11 @@ elif menu == "Signal Generation":
     st.subheader("Signal Preview")
     if generate_button:
         st.info(f"Generating {wave_type.lower()} with A={amplitude}, θ={phase}, f={analog_freq}, fs={sampling_freq}, duration={duration}")
-        indices, result = generate_analog_signal(wave_type, amplitude, phase, analog_freq, duration)
-        plot_signal(indices, result, f"{wave_type} Signal", mode="Continuous",generate_state="Signal")
-        indices, result = generate_discrete_signal(wave_type, amplitude, phase, analog_freq, sampling_freq, duration)
-        plot_signal(indices, result, f"{wave_type} Signal", mode=display_mode,generate_state="Sampled")
+        t, analog_signal = generate_analog_signal(wave_type, amplitude, phase, analog_freq, duration)
+        plot_signal(t, analog_signal, f"Analog {wave_type} (Continuous)", mode="Continuous")
 
+        n, sampled_signal = generate_discrete_signal(wave_type, amplitude, phase, analog_freq, sampling_freq, duration)
+        plot_signal(n, sampled_signal, f"Sampled {wave_type} (Discrete)", mode=display_mode)
     else:
         st.write("Adjust parameters above and ensure Nyquist condition is satisfied to enable generation.")
 
