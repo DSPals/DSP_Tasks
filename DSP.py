@@ -226,7 +226,7 @@ def ReadSignalFile(file_name):
 
 def AddSignalSamplesAreEqual(userFirstSignal,userSecondSignal,Your_indices,Your_samples):
     if(userFirstSignal=='Signal1.txt' and userSecondSignal=='Signal2.txt'):
-        file_name=r"D:\Downloads\Task 1 testcases and testing functions\Task 1 testcases and testing functions\add.txt"
+        file_name=r"D:\DSP_Tasks\Task 1 testcases and testing functions\Task 1 testcases and testing functions\add.txt"
     expected_indices,expected_samples=ReadSignalFile(file_name)          
     if (len(expected_samples)!=len(Your_samples)) and (len(expected_indices)!=len(Your_indices)):
         print("Addition Test case failed, your signal have different length from the expected one")
@@ -245,7 +245,7 @@ def AddSignalSamplesAreEqual(userFirstSignal,userSecondSignal,Your_indices,Your_
 
 def SubSignalSamplesAreEqual(userFirstSignal,userSecondSignal,Your_indices,Your_samples):
     if(userFirstSignal=='Signal1.txt' and userSecondSignal=='Signal2.txt'):
-        file_name=r"D:\Downloads\Task 1 testcases and testing functions\Task 1 testcases and testing functions\subtract.txt"
+        file_name=r"D:\DSP_Tasks\Task 1 testcases and testing functions\Task 1 testcases and testing functions\subtract.txt"
         
     expected_indices,expected_samples=ReadSignalFile(file_name)   
     
@@ -266,7 +266,7 @@ def SubSignalSamplesAreEqual(userFirstSignal,userSecondSignal,Your_indices,Your_
     
 def MultiplySignalByConst(User_Const,Your_indices,Your_samples):
     if(User_Const==5):
-        file_name=r"D:\Downloads\Task 1 testcases and testing functions\Task 1 testcases and testing functions\mul5.txt" 
+        file_name=r"D:\DSP_Tasks\Task 1 testcases and testing functions\Task 1 testcases and testing functions\mul5.txt" 
         
     expected_indices,expected_samples=ReadSignalFile(file_name)      
     if (len(expected_samples)!=len(Your_samples)) and (len(expected_indices)!=len(Your_indices)):
@@ -286,9 +286,9 @@ def MultiplySignalByConst(User_Const,Your_indices,Your_samples):
 
 def ShiftSignalByConst(Shift_value,Your_indices,Your_samples):
     if(Shift_value==3):  #x(n+k)
-        file_name=r"D:\Downloads\Task 1 testcases and testing functions\Task 1 testcases and testing functions\advance3.txt" 
+        file_name=r"D:\DSP_Tasks\Task 1 testcases and testing functions\Task 1 testcases and testing functions\advance3.txt" 
     elif(Shift_value==-3): #x(n-k)
-        file_name=r"D:\Downloads\Task 1 testcases and testing functions\Task 1 testcases and testing functions\delay3.txt"
+        file_name=r"D:\DSP_Tasks\Task 1 testcases and testing functions\Task 1 testcases and testing functions\delay3.txt"
         
     expected_indices,expected_samples=ReadSignalFile(file_name)      
     if (len(expected_samples)!=len(Your_samples)) and (len(expected_indices)!=len(Your_indices)):
@@ -307,7 +307,7 @@ def ShiftSignalByConst(Shift_value,Your_indices,Your_samples):
     print("Shift by "+str(Shift_value)+" Test case passed successfully")
 
 def Folding(Your_indices,Your_samples):
-    file_name = r"D:\Downloads\Task 1 testcases and testing functions\Task 1 testcases and testing functions\folding.txt"
+    file_name = r"D:\DSP_Tasks\Task 1 testcases and testing functions\Task 1 testcases and testing functions\folding.txt"
     expected_indices,expected_samples=ReadSignalFile(file_name)      
     if (len(expected_samples)!=len(Your_samples)) and (len(expected_indices)!=len(Your_indices)):
         print("Folding Test case failed, your signal have different length from the expected one")
@@ -357,7 +357,7 @@ if menu == "Signal Operations":
                 "Subtract Signals",
                 "Delay/Advance",
                 "Fold/Reverse",
-                "Two Signals at the Same Time"
+                "Signals at the Same Time"
             ],
         )
 
@@ -368,7 +368,7 @@ if menu == "Signal Operations":
             AddSignalSamplesAreEqual("Signal1.txt", "Signal2.txt",indices,result) 
 
         elif option == "Multiply Signal by Constant":
-            k = st.number_input("Enter constant (k):", value=2.0)
+            k = st.number_input("Enter constant (k):", value=5.0)
             indices, result = multiply_signal(signals[0], k)
             plot_signal(indices, result, f"Signal * {k}", mode=display_mode)
             download_signal(indices, result, f"Download Signal * {k}", f"signal_times_{k}.txt")
