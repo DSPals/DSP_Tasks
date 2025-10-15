@@ -32,7 +32,7 @@ def read_signal(file):
     indices, values = zip(*data)
     return np.array(indices), np.array(values)
 
-def plot_signal(indices, values, title="Signal", mode="Discrete"):
+def plot_signal(indices, values, title="Signal", mode="Discrete", sample = 0):
     fig, ax = plt.subplots()
 
     # ---- First signal ----
@@ -44,8 +44,6 @@ def plot_signal(indices, values, title="Signal", mode="Discrete"):
         ax.plot(indices, values, color="b", alpha=0.6, label=f"{title} (Continuous)")
         ax.stem(indices, values, linefmt="g-", markerfmt="go", basefmt="k-", label=f"{title} (Discrete)")
 
-
-
     # ---- Automatic axis labels ----
     if mode == "Continuous":
         ax.set_xlabel("t (seconds)")
@@ -54,8 +52,13 @@ def plot_signal(indices, values, title="Signal", mode="Discrete"):
         ax.set_xlabel("n (samples)")
         ax.set_ylabel("x[n]")
     elif mode == "Discrete + Continuous":
-        ax.set_xlabel("t / n (time or sample index)")
+        ax.set_xlabel("t , n (time or sample index)")
         ax.set_ylabel("x[t], x[n]")
+
+    if sample == 1:
+        ax.set_xlabel("n (samples)")
+        ax.set_ylabel("x[n]")
+    
 
     ax.set_title(title)
     ax.grid(True, which="both")
@@ -171,14 +174,15 @@ def generate_analog_signal(wave_type, amplitude, phase, analog_freq, duration):
         x = amplitude * np.cos(2 * np.pi * analog_freq * t + phase)
     return t, x
 
-def generate_discrete_signal(wave_type, amplitude, phase, analog_freq, sampling_freq, duration):
 
+def generate_discrete_signal(wave_type, amplitude, phase, analog_freq, sampling_freq, duration):
     analog_freq = float(analog_freq)
     sampling_freq = float(sampling_freq)
     duration = float(duration)
     
     # Generate discrete-time sample indices
     n = np.arange(0, int(duration * sampling_freq))
+    t_n = n / sampling_freq 
     
     omega = 2 * np.pi * analog_freq / sampling_freq  
     
@@ -187,7 +191,8 @@ def generate_discrete_signal(wave_type, amplitude, phase, analog_freq, sampling_
     else:
         x = amplitude * np.cos(omega * n + phase)
 
-    return n, x
+    return t_n, x  
+
 
 
 # ==========================
@@ -442,7 +447,7 @@ elif menu == "Signal Generation":
         plot_signal(t, analog_signal, f"Analog {wave_type} (Continuous)", mode="Continuous")
 
         n, sampled_signal = generate_discrete_signal(wave_type, amplitude, phase, analog_freq, sampling_freq, duration)
-        plot_signal(n, sampled_signal, f"Sampled {wave_type} (Discrete)", mode=display_mode)
+        plot_signal(n, sampled_signal, f"Sampled {wave_type} (Discrete)", mode=display_mode,sample=1)
     else:
         st.write("Adjust parameters above and ensure Nyquist condition is satisfied to enable generation.")
 
