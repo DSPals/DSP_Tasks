@@ -32,7 +32,7 @@ def read_signal(file):
     indices, values = zip(*data)
     return np.array(indices), np.array(values)
 
-def plot_signal(indices, values, title="Signal", mode="Discrete", second_signal=None):
+def plot_signal(indices, values, title="Signal", mode="Discrete"):
     fig, ax = plt.subplots()
 
     # ---- First signal ----
@@ -44,16 +44,7 @@ def plot_signal(indices, values, title="Signal", mode="Discrete", second_signal=
         ax.plot(indices, values, color="b", alpha=0.6, label=f"{title} (Continuous)")
         ax.stem(indices, values, linefmt="g-", markerfmt="go", basefmt="k-", label=f"{title} (Discrete)")
 
-    # ---- Second signal (optional) ----
-    if second_signal:
-        idx2, val2, label2 = second_signal
-        if mode == "Continuous":
-            ax.plot(idx2, val2, label=label2, color='orange')
-        elif mode == "Discrete":
-            ax.stem(idx2, val2, linefmt="r-", markerfmt="ro", basefmt="k-", label=label2)
-        elif mode == "Discrete + Continuous":
-            ax.plot(idx2, val2, color="r", alpha=0.6, label=f"{label2} (Continuous)")
-            ax.stem(idx2, val2, linefmt="r-", markerfmt="ro", basefmt="k-", label=f"{label2} (Discrete)")
+
 
     # ---- Automatic axis labels ----
     if mode == "Continuous":
