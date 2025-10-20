@@ -194,6 +194,41 @@ def generate_discrete_signal(wave_type, amplitude, phase, analog_freq, sampling_
     return t_n, x  
 
 
+def quantize_signal(signal, num_levels=None, num_bits=None):
+    indices, values = signal
+
+    # --- determine number of levels ---
+    if num_bits is not None:
+        num_levels = 2 ** int(num_bits)
+    elif num_levels is None:
+        raise ValueError("Either num_levels or num_bits must be provided")
+
+    # --- compute quantization parameters ---
+    v_min, v_max = np.min(values), np.max(values)
+    delta = (v_max - v_min) / num_levels
+
+    # --- define decision boundaries and reconstruction levels ---
+    boundaries = np.linspace(v_min, v_max, num_levels + 1)
+    q_levels = (boundaries[:-1] + boundaries[1:]) / 2  # midpoints
+
+    # --- quantize ---
+    quantized_values = np.zeros_like(values)
+    interval_indices = np.zeros_like(values, dtype=int)
+    encoded_values = []
+    sampled_error = []
+
+    for i, v in enumerate(values):
+        # find interval index
+        idx = np.clip(np.digitize(v, boundaries) - 1, 0, num_levels - 1)
+        interval_indices[i] = idx + 1  
+        quantized_values[i] = q_levels[idx]
+        sampled_error.append(q_levels[idx] - v)
+        # binary encoding
+        encoded = format(idx, f"0{int(np.log2(num_levels))}b")
+        encoded_values.append(encoded)
+
+    return interval_indices.tolist(), encoded_values, quantized_values.tolist(), sampled_error
+
 
 # ==========================
 # Test Functions 
@@ -324,6 +359,98 @@ def Folding(Your_indices,Your_samples):
             return
     print("Folding Test case passed successfully")
 
+
+
+def QuantizationTest1(file_name,Your_EncodedValues,Your_QuantizedValues):
+    expectedEncodedValues=[]
+    expectedQuantizedValues=[]
+    with open(file_name, 'r') as f:
+        line = f.readline()
+        line = f.readline()
+        line = f.readline()
+        line = f.readline()
+        while line:
+            # process line
+            L=line.strip()
+            if len(L.split(' '))==2:
+                L=line.split(' ')
+                V2=str(L[0])
+                V3=float(L[1])
+                expectedEncodedValues.append(V2)
+                expectedQuantizedValues.append(V3)
+                line = f.readline()
+            else:
+                break
+    if( (len(Your_EncodedValues)!=len(expectedEncodedValues)) or (len(Your_QuantizedValues)!=len(expectedQuantizedValues))):
+        print("QuantizationTest1 Test case failed, your signal have different length from the expected one")
+        return
+    for i in range(len(Your_EncodedValues)):
+        if(Your_EncodedValues[i]!=expectedEncodedValues[i]):
+            print("QuantizationTest1 Test case failed, your EncodedValues have different EncodedValues from the expected one") 
+            return
+    for i in range(len(expectedQuantizedValues)):
+        if abs(Your_QuantizedValues[i] - expectedQuantizedValues[i]) < 0.01:
+            continue
+        else:
+            print("QuantizationTest1 Test case failed, your QuantizedValues have different values from the expected one") 
+            return
+    print("QuantizationTest1 Test case passed successfully")
+
+def QuantizationTest2(file_name,Your_IntervalIndices,Your_EncodedValues,Your_QuantizedValues,Your_SampledError):
+    expectedIntervalIndices=[]
+    expectedEncodedValues=[]
+    expectedQuantizedValues=[]
+    expectedSampledError=[]
+    with open(file_name, 'r') as f:
+        line = f.readline()
+        line = f.readline()
+        line = f.readline()
+        line = f.readline()
+        while line:
+            # process line
+            L=line.strip()
+            if len(L.split(' '))==4:
+                L=line.split(' ')
+                V1=int(L[0])
+                V2=str(L[1])
+                V3=float(L[2])
+                V4=float(L[3])
+                expectedIntervalIndices.append(V1)
+                expectedEncodedValues.append(V2)
+                expectedQuantizedValues.append(V3)
+                expectedSampledError.append(V4)
+                line = f.readline()
+            else:
+                break
+    if(len(Your_IntervalIndices)!=len(expectedIntervalIndices)
+     or len(Your_EncodedValues)!=len(expectedEncodedValues)
+      or len(Your_QuantizedValues)!=len(expectedQuantizedValues)
+      or len(Your_SampledError)!=len(expectedSampledError)):
+        print("QuantizationTest2 Test case failed, your signal have different length from the expected one")
+        return
+    for i in range(len(Your_IntervalIndices)):
+        if(Your_IntervalIndices[i]!=expectedIntervalIndices[i]):
+            print("QuantizationTest2 Test case failed, your signal have different indicies from the expected one") 
+            return
+    for i in range(len(Your_EncodedValues)):
+        if(Your_EncodedValues[i]!=expectedEncodedValues[i]):
+            print("QuantizationTest2 Test case failed, your EncodedValues have different EncodedValues from the expected one") 
+            return
+        
+    for i in range(len(expectedQuantizedValues)):
+        if abs(Your_QuantizedValues[i] - expectedQuantizedValues[i]) < 0.01:
+            continue
+        else:
+            print("QuantizationTest2 Test case failed, your QuantizedValues have different values from the expected one") 
+            return
+    for i in range(len(expectedSampledError)):
+        if abs(Your_SampledError[i] - expectedSampledError[i]) < 0.01:
+            continue
+        else:
+            print("QuantizationTest2 Test case failed, your SampledError have different values from the expected one") 
+            return
+    print("QuantizationTest2 Test case passed successfully")
+    
 # ==========================
 # GUI Functions 
 # ========================== 
@@ -332,7 +459,7 @@ def Folding(Your_indices,Your_samples):
 
 st.title("DSP Signal Processor")
 
-menu = st.sidebar.radio("Main Menu", ["Signal Operations", "Signal Generation"])
+menu = st.sidebar.radio("Main Menu", ["Signal Operations", "Signal Generation", "Quantization"])
 
 display_mode = st.sidebar.selectbox("Display Mode", ["Discrete", "Continuous", "Discrete + Continuous"])
 
@@ -453,8 +580,78 @@ elif menu == "Signal Generation":
 
 
 
+elif menu == "Quantization":
+    st.header("Signal Quantization")
 
+    uploaded_file = st.file_uploader("Upload a signal file to quantize", type=["txt"])
+    if uploaded_file:
+        indices, values = read_signal(uploaded_file)
+        signal = (indices, values)
+        st.write(f"Loaded `{uploaded_file.name}` with {len(values)} samples")
+        plot_signal(indices, values, title=f"{uploaded_file.name}", mode=display_mode)
 
+        quant_type = st.radio("Select Quantization Mode", ["By Bits", "By Levels"], horizontal=True)
+
+        # ========================
+        # QUANTIZATION BY BITS
+        # ========================
+        if quant_type == "By Bits":
+            num_bits = st.number_input("Enter number of bits (b):", min_value=1, max_value=8, value=3, step=1)
+
+            if st.button("Quantize Now (By Bits)"):
+                _, encoded_values, quantized_values, _ = quantize_signal(signal, num_bits=num_bits)
+
+                st.subheader("🧾 Output Data")
+                df = pd.DataFrame({
+                    "Index (n)": indices,
+                    "Encoded": encoded_values,
+                    "Quantized": quantized_values
+                })
+                st.dataframe(df)
+
+                # Plot original vs quantized
+                plot_multiple_signals([
+                    (indices, values, "Original Signal"),
+                    (indices, quantized_values, "Quantized Signal")
+                ], mode=display_mode)
+
+                # =====================
+                # Run Test Function 1
+                # =====================
+                st.markdown("### 🧪 Running Quantization Test 1")
+                QuantizationTest1(r"D:\Downloads\Quan1_Out.txt", encoded_values, quantized_values)
+
+        # =========================
+        # QUANTIZATION BY LEVELS
+        # =========================
+        elif quant_type == "By Levels":
+            num_levels = st.number_input("Enter number of levels (L):", min_value=2, max_value=32, value=4, step=1)
+
+            if st.button("Quantize Now (By Levels)"):
+                interval_indices, encoded_values, quantized_values, sampled_error = quantize_signal(signal, num_levels=num_levels)
+
+                st.subheader("🧾 Output Data")
+                df = pd.DataFrame({
+                    "Index (n)": indices,
+                    "Original": values,
+                    "Interval": interval_indices,
+                    "Encoded": encoded_values,
+                    "Quantized": quantized_values,
+                    "Error": sampled_error
+                })
+                st.dataframe(df)
+
+                # Plot both signals
+                plot_multiple_signals([
+                    (indices, values, "Original Signal"),
+                    (indices, quantized_values, "Quantized Signal")
+                ], mode=display_mode)
+
+                # =====================
+                # Run Test Function 2
+                # =====================
+                st.markdown("### Running Quantization Test 2")
+                QuantizationTest2(r"D:\Downloads\Quan2_Out.txt", interval_indices, encoded_values, quantized_values, sampled_error)
 
 
 
