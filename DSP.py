@@ -1,6 +1,7 @@
 import streamlit as st
 import matplotlib.pyplot as plt
 import numpy as np
+import pandas as pd
 import io
 
 # ==========================
@@ -28,7 +29,7 @@ def read_signal(file):
     if start_idx is None:
         raise ValueError("No valid signal data found in file.")
 
-    data = [list(map(int, line.split())) for line in content[start_idx:]]
+    data = [list(map(float, line.split())) for line in content[start_idx:]]
     indices, values = zip(*data)
     return np.array(indices), np.array(values)
 
@@ -64,7 +65,6 @@ def plot_signal(indices, values, title="Signal", mode="Discrete", sample = 0):
     ax.grid(True, which="both")
     ax.legend()
     st.pyplot(fig)
-
 
 def plot_multiple_signals(signals, mode="Discrete"):
     
@@ -111,7 +111,6 @@ def plot_multiple_signals(signals, mode="Discrete"):
     ax.grid(True, which="both")
     ax.legend()
     st.pyplot(fig)
-
 
 def download_signal(indices, values, label="Download Result", default_name="output.txt"):
     buffer = io.StringIO()
@@ -161,7 +160,6 @@ def fold_signal(signal):
     sorted_order = np.argsort(folded_indices)
     return folded_indices[sorted_order], values[sorted_order]
 
-
 def generate_analog_signal(wave_type, amplitude, phase, analog_freq, duration):
     
     analog_freq = float(analog_freq)
@@ -173,7 +171,6 @@ def generate_analog_signal(wave_type, amplitude, phase, analog_freq, duration):
     else:
         x = amplitude * np.cos(2 * np.pi * analog_freq * t + phase)
     return t, x
-
 
 def generate_discrete_signal(wave_type, amplitude, phase, analog_freq, sampling_freq, duration):
     analog_freq = float(analog_freq)
@@ -359,8 +356,6 @@ def Folding(Your_indices,Your_samples):
             return
     print("Folding Test case passed successfully")
 
-
-
 def QuantizationTest1(file_name,Your_EncodedValues,Your_QuantizedValues):
     expectedEncodedValues=[]
     expectedQuantizedValues=[]
@@ -463,7 +458,6 @@ menu = st.sidebar.radio("Main Menu", ["Signal Operations", "Signal Generation", 
 
 display_mode = st.sidebar.selectbox("Display Mode", ["Discrete", "Continuous", "Discrete + Continuous"])
 
-# File uploader
 if menu == "Signal Operations":
     uploaded_files = st.file_uploader("Upload signal files", type=["txt"], accept_multiple_files=True)
 
@@ -578,8 +572,6 @@ elif menu == "Signal Generation":
     else:
         st.write("Adjust parameters above and ensure Nyquist condition is satisfied to enable generation.")
 
-
-
 elif menu == "Quantization":
     st.header("Signal Quantization")
 
@@ -601,7 +593,7 @@ elif menu == "Quantization":
             if st.button("Quantize Now (By Bits)"):
                 _, encoded_values, quantized_values, _ = quantize_signal(signal, num_bits=num_bits)
 
-                st.subheader("🧾 Output Data")
+                st.subheader(" Output Data")
                 df = pd.DataFrame({
                     "Index (n)": indices,
                     "Encoded": encoded_values,
@@ -618,9 +610,9 @@ elif menu == "Quantization":
                 # =====================
                 # Run Test Function 1
                 # =====================
-                st.markdown("### 🧪 Running Quantization Test 1")
+                #st.markdown("###  Running Quantization Test 1")
                 QuantizationTest1(r"D:\Downloads\Quan1_Out.txt", encoded_values, quantized_values)
-
+                
         # =========================
         # QUANTIZATION BY LEVELS
         # =========================
@@ -630,7 +622,7 @@ elif menu == "Quantization":
             if st.button("Quantize Now (By Levels)"):
                 interval_indices, encoded_values, quantized_values, sampled_error = quantize_signal(signal, num_levels=num_levels)
 
-                st.subheader("🧾 Output Data")
+                st.subheader(" Output Data")
                 df = pd.DataFrame({
                     "Index (n)": indices,
                     "Original": values,
@@ -650,9 +642,9 @@ elif menu == "Quantization":
                 # =====================
                 # Run Test Function 2
                 # =====================
-                st.markdown("### Running Quantization Test 2")
+                #st.markdown("### Running Quantization Test 2")
                 QuantizationTest2(r"D:\Downloads\Quan2_Out.txt", interval_indices, encoded_values, quantized_values, sampled_error)
-
+                
 
 
 
