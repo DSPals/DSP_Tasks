@@ -1,5 +1,12 @@
-#!/usr/bin/env python
-# coding: utf-8
+import os
+
+def get_task_file(*path_parts):
+    """
+    Build a full path to a file inside the Tasks folder.
+    Example: get_task_file("Task 3", "Test 1", "Quan1_input.txt")
+    """
+    base_dir = os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
+    return os.path.join(base_dir, "Tasks", *path_parts)
 
 def ReadSignalFile(file_name):
     expected_indices=[]
@@ -25,7 +32,7 @@ def ReadSignalFile(file_name):
 
 def AddSignalSamplesAreEqual(userFirstSignal,userSecondSignal,Your_indices,Your_samples):
     if(userFirstSignal=='Signal1.txt' and userSecondSignal=='Signal2.txt'):
-        file_name=r"D:\DSP_Tasks\Task 1 testcases and testing functions\Task 1 testcases and testing functions\add.txt"
+        file_name=file_name = get_task_file("Task 1&2", "add.txt")
     expected_indices,expected_samples=ReadSignalFile(file_name)          
     if (len(expected_samples)!=len(Your_samples)) and (len(expected_indices)!=len(Your_indices)):
         print("Addition Test case failed, your signal have different length from the expected one")
@@ -44,7 +51,7 @@ def AddSignalSamplesAreEqual(userFirstSignal,userSecondSignal,Your_indices,Your_
 
 def SubSignalSamplesAreEqual(userFirstSignal,userSecondSignal,Your_indices,Your_samples):
     if(userFirstSignal=='Signal1.txt' and userSecondSignal=='Signal2.txt'):
-        file_name=r"D:\DSP_Tasks\Task 1 testcases and testing functions\Task 1 testcases and testing functions\subtract.txt"
+        file_name=file_name = get_task_file("Task 1&2", "subtract.txt")
         
     expected_indices,expected_samples=ReadSignalFile(file_name)   
     
@@ -65,7 +72,7 @@ def SubSignalSamplesAreEqual(userFirstSignal,userSecondSignal,Your_indices,Your_
     
 def MultiplySignalByConst(User_Const,Your_indices,Your_samples):
     if(User_Const==5):
-        file_name=r"D:\DSP_Tasks\Task 1 testcases and testing functions\Task 1 testcases and testing functions\mul5.txt" 
+        file_name=file_name = get_task_file("Task 1&2", "mul5.txt") 
         
     expected_indices,expected_samples=ReadSignalFile(file_name)      
     if (len(expected_samples)!=len(Your_samples)) and (len(expected_indices)!=len(Your_indices)):
@@ -85,9 +92,9 @@ def MultiplySignalByConst(User_Const,Your_indices,Your_samples):
 
 def ShiftSignalByConst(Shift_value,Your_indices,Your_samples):
     if(Shift_value==3):  #x(n+k)
-        file_name=r"D:\DSP_Tasks\Task 1 testcases and testing functions\Task 1 testcases and testing functions\advance3.txt" 
+        file_name=file_name = get_task_file("Task 1&2", "advance3.txt") 
     elif(Shift_value==-3): #x(n-k)
-        file_name=r"D:\DSP_Tasks\Task 1 testcases and testing functions\Task 1 testcases and testing functions\delay3.txt"
+        file_name=file_name = get_task_file("Task 1&2", "delay3.txt")
         
     expected_indices,expected_samples=ReadSignalFile(file_name)      
     if (len(expected_samples)!=len(Your_samples)) and (len(expected_indices)!=len(Your_indices)):
@@ -106,7 +113,7 @@ def ShiftSignalByConst(Shift_value,Your_indices,Your_samples):
     print("Shift by "+str(Shift_value)+" Test case passed successfully")
 
 def Folding(Your_indices,Your_samples):
-    file_name = r"D:\DSP_Tasks\Task 1 testcases and testing functions\Task 1 testcases and testing functions\folding.txt"
+    file_name = file_name = get_task_file("Task 1&2", "folding.txt")
     expected_indices,expected_samples=ReadSignalFile(file_name)      
     if (len(expected_samples)!=len(Your_samples)) and (len(expected_indices)!=len(Your_indices)):
         print("Folding Test case failed, your signal have different length from the expected one")
@@ -123,7 +130,9 @@ def Folding(Your_indices,Your_samples):
             return
     print("Folding Test case passed successfully")
 
-def QuantizationTest1(file_name,Your_EncodedValues,Your_QuantizedValues):
+def QuantizationTest1(Your_EncodedValues,Your_QuantizedValues):
+    file_name = get_task_file("Task 3", "Test 1", "Quan1_Out.txt")
+
     expectedEncodedValues=[]
     expectedQuantizedValues=[]
     with open(file_name, 'r') as f:
@@ -158,7 +167,9 @@ def QuantizationTest1(file_name,Your_EncodedValues,Your_QuantizedValues):
             return
     print("QuantizationTest1 Test case passed successfully")
 
-def QuantizationTest2(file_name,Your_IntervalIndices,Your_EncodedValues,Your_QuantizedValues,Your_SampledError):
+def QuantizationTest2(Your_IntervalIndices,Your_EncodedValues,Your_QuantizedValues,Your_SampledError):
+    file_name = get_task_file("Task 3", "Test 2", "Quan2_Out.txt")
+
     expectedIntervalIndices=[]
     expectedEncodedValues=[]
     expectedQuantizedValues=[]

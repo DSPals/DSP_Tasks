@@ -54,7 +54,7 @@ def plot_multiple_signals(signals, mode="Discrete"):
             plt.setp(markerline, color=color, marker=marker)
             plt.setp(stemlines, color=color)
 
-    ax.set_xlabel("t / n")
+    ax.set_xlabel("t , n")
     ax.set_ylabel("x[t], x[n]")
     ax.set_title("All Signals Comparison")
     ax.grid(True)

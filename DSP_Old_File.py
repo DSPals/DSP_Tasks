@@ -611,7 +611,7 @@ elif menu == "Quantization":
                 # Run Test Function 1
                 # =====================
                 #st.markdown("###  Running Quantization Test 1")
-                QuantizationTest1(r"D:\Downloads\Quan1_Out.txt", encoded_values, quantized_values)
+                QuantizationTest1(encoded_values, quantized_values)
                 
         # =========================
         # QUANTIZATION BY LEVELS
@@ -643,7 +643,7 @@ elif menu == "Quantization":
                 # Run Test Function 2
                 # =====================
                 #st.markdown("### Running Quantization Test 2")
-                QuantizationTest2(r"D:\Downloads\Quan2_Out.txt", interval_indices, encoded_values, quantized_values, sampled_error)
+                QuantizationTest2(interval_indices, encoded_values, quantized_values, sampled_error)
                 
 
 

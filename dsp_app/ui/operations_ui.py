@@ -19,7 +19,7 @@ def operations_tab(display_mode):
 
     option = st.selectbox(
         "Choose Operation",
-        ["Add Signals", "Multiply Signal by Constant", "Subtract Signals", "Delay/Advance", "Fold/Reverse", "Signals at the Same Time"]
+        ["Add Signals", "Multiply Signal by Constant", "Subtract Signals", "Delay/Advance", "Fold/Reverse", "Plot all Signals"]
     )
 
     if option == "Add Signals" and len(signals) > 1:
@@ -54,7 +54,7 @@ def operations_tab(display_mode):
         download_signal(indices, result, "Download Folded Signal", "folded_signal.txt")
         Folding(indices, result)
 
-    elif option == "Signals at the Same Time" and len(signals) >= 2:
+    elif option == "Plot all Signals" and len(signals) >= 2:
         labeled_signals = [
             (indices, values, uploaded_files[i].name if i < len(uploaded_files) else f"Signal {i+1}")
             for i, (indices, values) in enumerate(signals)

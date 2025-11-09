@@ -25,7 +25,7 @@ def quantization_tab(display_mode):
             df = pd.DataFrame({"Index (n)": indices, "Encoded": encoded, "Quantized": quantized})
             st.dataframe(df)
             plot_multiple_signals([(indices, values, "Original"), (indices, quantized, "Quantized")], mode=display_mode)
-            QuantizationTest1(r"D:\Downloads\Quan1_Out.txt", encoded, quantized)
+            QuantizationTest1(encoded, quantized)
 
     elif quant_type == "By Levels":
         num_levels = st.number_input("Enter number of levels (L):", min_value=2, max_value=32, value=4, step=1)
@@ -41,4 +41,4 @@ def quantization_tab(display_mode):
             })
             st.dataframe(df)
             plot_multiple_signals([(indices, values, "Original"), (indices, quantized, "Quantized")], mode=display_mode)
-            QuantizationTest2(r"D:\Downloads\Quan2_Out.txt", intervals, encoded, quantized, errors)
+            QuantizationTest2(intervals, encoded, quantized, errors)

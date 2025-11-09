@@ -1,0 +1,72 @@
+# ------------------------------
+# Python
+# ------------------------------
+__pycache__/
+*.py[cod]
+*.so
+*.pyo
+*.pyd
+*.py.class
+*.egg
+*.egg-info/
+dist/
+build/
+.eggs/
+*.manifest
+*.spec
+
+# ------------------------------
+# Virtual Environments
+# ------------------------------
+venv/
+env/
+.venv/
+ENV/
+env.bak/
+venv.bak/
+
+# ------------------------------
+# Dependencies / Cache
+# ------------------------------
+pip-wheel-metadata/
+.pytest_cache/
+.tox/
+.coverage
+.coverage.*
+htmlcov/
+.mypy_cache/
+.dmypy.json
+.pyre/
+.pytype/
+.cache/
+
+# ------------------------------
+# IDE / Editor Configs
+# ------------------------------
+.vscode/
+.idea/
+*.sublime-workspace
+*.sublime-project
+
+# ------------------------------
+# Jupyter / Streamlit / Logs
+# ------------------------------
+.ipynb_checkpoints/
+.streamlit/
+logs/
+*.log
+
+# ------------------------------
+# OS / Miscellaneous
+# ------------------------------
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# ------------------------------
+# Local Files / Test Outputs
+# ------------------------------
+*.txt
+!requirements.txt
+!README.md
+!example_signals/*.txt
