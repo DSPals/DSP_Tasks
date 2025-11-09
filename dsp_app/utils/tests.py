@@ -32,7 +32,7 @@ def ReadSignalFile(file_name):
 
 def AddSignalSamplesAreEqual(userFirstSignal,userSecondSignal,Your_indices,Your_samples):
     if(userFirstSignal=='Signal1.txt' and userSecondSignal=='Signal2.txt'):
-        file_name=file_name = get_task_file("Task 1&2", "add.txt")
+        file_name=get_task_file("Task 1&2", "add.txt")
     expected_indices,expected_samples=ReadSignalFile(file_name)          
     if (len(expected_samples)!=len(Your_samples)) and (len(expected_indices)!=len(Your_indices)):
         print("Addition Test case failed, your signal have different length from the expected one")
@@ -51,7 +51,7 @@ def AddSignalSamplesAreEqual(userFirstSignal,userSecondSignal,Your_indices,Your_
 
 def SubSignalSamplesAreEqual(userFirstSignal,userSecondSignal,Your_indices,Your_samples):
     if(userFirstSignal=='Signal1.txt' and userSecondSignal=='Signal2.txt'):
-        file_name=file_name = get_task_file("Task 1&2", "subtract.txt")
+        file_name= get_task_file("Task 1&2", "subtract.txt")
         
     expected_indices,expected_samples=ReadSignalFile(file_name)   
     
@@ -72,7 +72,7 @@ def SubSignalSamplesAreEqual(userFirstSignal,userSecondSignal,Your_indices,Your_
     
 def MultiplySignalByConst(User_Const,Your_indices,Your_samples):
     if(User_Const==5):
-        file_name=file_name = get_task_file("Task 1&2", "mul5.txt") 
+        file_name= get_task_file("Task 1&2", "mul5.txt") 
         
     expected_indices,expected_samples=ReadSignalFile(file_name)      
     if (len(expected_samples)!=len(Your_samples)) and (len(expected_indices)!=len(Your_indices)):
@@ -92,9 +92,9 @@ def MultiplySignalByConst(User_Const,Your_indices,Your_samples):
 
 def ShiftSignalByConst(Shift_value,Your_indices,Your_samples):
     if(Shift_value==3):  #x(n+k)
-        file_name=file_name = get_task_file("Task 1&2", "advance3.txt") 
+        file_name= get_task_file("Task 1&2", "advance3.txt") 
     elif(Shift_value==-3): #x(n-k)
-        file_name=file_name = get_task_file("Task 1&2", "delay3.txt")
+        file_name= get_task_file("Task 1&2", "delay3.txt")
         
     expected_indices,expected_samples=ReadSignalFile(file_name)      
     if (len(expected_samples)!=len(Your_samples)) and (len(expected_indices)!=len(Your_indices)):
@@ -113,7 +113,7 @@ def ShiftSignalByConst(Shift_value,Your_indices,Your_samples):
     print("Shift by "+str(Shift_value)+" Test case passed successfully")
 
 def Folding(Your_indices,Your_samples):
-    file_name = file_name = get_task_file("Task 1&2", "folding.txt")
+    file_name = get_task_file("Task 1&2", "folding.txt")
     expected_indices,expected_samples=ReadSignalFile(file_name)      
     if (len(expected_samples)!=len(Your_samples)) and (len(expected_indices)!=len(Your_indices)):
         print("Folding Test case failed, your signal have different length from the expected one")
@@ -224,3 +224,31 @@ def QuantizationTest2(Your_IntervalIndices,Your_EncodedValues,Your_QuantizedValu
             return
     print("QuantizationTest2 Test case passed successfully")
  
+def CompareSignals_Convolution(Operation,Your_indices,Your_samples):
+
+    if Operation == "Moving Average 1":
+         file_name= get_task_file("Task 5","testcases","Moving Average testcases", "MovingAvg_out1.txt")
+    if Operation == "Moving Average 2":
+         file_name= get_task_file("Task 5","testcases","Moving Average testcases", "MovingAvg_out2.txt")
+    elif Operation == "Derivative 1":
+        file_name= get_task_file("Task 5","testcases","Derivative testcases", "1st_derivative_out.txt")
+    elif Operation == "Derivative 2":
+        file_name= get_task_file("Task 5","testcases","Derivative testcases", "2nd_derivative_out.txt")
+    elif Operation == "Convolution":
+        file_name= get_task_file("Task 5","testcases","Convolution testcases", "Conv_output.txt")
+        
+    expected_indices,expected_samples=ReadSignalFile(file_name)  
+    if (len(expected_samples)!=len(Your_samples)) and (len(expected_indices)!=len(Your_indices)):
+        print(Operation + " Test case failed, your signal have different length from the expected one")
+        return
+    for i in range(len(Your_indices)):
+        if(Your_indices[i]!=expected_indices[i]):
+            print(Operation + " Test case failed, your signal have different indicies from the expected one") 
+            return
+    for i in range(len(expected_samples)):
+        if abs(Your_samples[i] - expected_samples[i]) < 0.01:
+            continue
+        else:
+            print(Operation + " Test case failed, your signal have different values from the expected one") 
+            return
+    print(Operation + " Test case passed successfully")
