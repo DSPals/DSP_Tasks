@@ -1,0 +1,46 @@
+import docx
+import numpy as np
+from utils.tests import SignalComapreAmplitude, SignalComaprePhaseShift
+
+def read_docx_amp_phase(path):
+    import docx
+
+    doc = docx.Document(path)
+
+    amps = []
+    phases = []
+    count = 0
+
+    for para in doc.paragraphs:
+        line = para.text.strip()
+        if not line:
+            continue
+
+        count += 1
+        
+        # Skip the first 3 header lines
+        if count <= 3:
+            continue
+
+        # Clean and parse
+        line = line.replace("f", "")
+        parts = line.split()
+
+        if len(parts) == 2:
+            try:
+                amp = float(parts[0])
+                phase = float(parts[1])
+                amps.append(amp)
+                phases.append(phase)
+            except:
+                pass
+
+    return amps, phases
+
+
+def run_dft_tests(expected_amp, expected_phase, my_amp, my_phase):
+    
+    amp_ok = SignalComapreAmplitude(expected_amp, list(my_amp))
+    phase_ok = SignalComaprePhaseShift(expected_phase, list(my_phase))
+
+    return amp_ok, phase_ok
