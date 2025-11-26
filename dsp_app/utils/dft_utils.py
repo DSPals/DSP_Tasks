@@ -2,7 +2,6 @@ import numpy as np
 
 def smart_dft_idft(x, inverse: bool = False):
     
-    
     x = np.array(x, dtype=complex)
 
     N = x.shape[0]

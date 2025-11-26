@@ -1,83 +1,18 @@
 import streamlit as st
 import numpy as np
 from io import StringIO
+from utils.file_utils import _parse_signal_file
 from utils.dft_utils import smart_dft_idft, compute_amplitude_phase
 from utils.plot_utils import plot_signal
 from utils.dft_test_utils import read_docx_amp_phase, run_dft_tests
 import tempfile
-
-def _parse_signal_file(uploaded_file):
-    """
-    Robust parser for your signal files. Many of your test files have 3 header lines
-    then lines like: "<index> <value>" possibly with tabs.
-    Returns (indices_list, samples_list) where samples_list are floats.
-    """
-    # uploaded_file is a streamlit UploadedFile or a path-like object with .read()
-    content_bytes = uploaded_file.read()
-    # reset file pointer for Streamlit after reading (so other code can read again)
-    try:
-        uploaded_file.seek(0)
-    except Exception:
-        pass
-
-    # decode
-    try:
-        s = content_bytes.decode("utf-8")
-    except Exception:
-        s = content_bytes.decode("latin-1")
-
-    lines = [ln.strip() for ln in s.splitlines() if ln.strip() != ""]
-
-    # many test files have some header lines — try to locate first data line that contains two tokens.
-    data_lines = []
-    for ln in lines:
-        parts = ln.split()
-        # Accept lines with 2 tokens where first token is int-like and second is number-like
-        if len(parts) >= 2:
-            # sometimes there are extra non-data lines; try parseability
-            try:
-                _idx = int(parts[0])
-                _val = float(parts[1])
-                data_lines.append((parts[0], parts[1]))
-            except Exception:
-                # skip
-                continue
-
-    if not data_lines:
-        # fallback: maybe file contains a single column of samples
-        numeric = []
-        for ln in lines:
-            try:
-                numeric.append(float(ln))
-            except Exception:
-                continue
-        if numeric:
-            indices = list(range(len(numeric)))
-            samples = numeric
-            return indices, samples
-
-        # nothing usable
-        return [], []
-
-    indices = []
-    samples = []
-    for a, b in data_lines:
-        indices.append(int(a))
-        samples.append(float(b))
-
-    return indices, samples
-
 
 def fourier_tab(display_mode):
     st.header("Fourier Transform (DFT / IDFT)")
 
     st.markdown("Upload a signal file (text). Format: `<index> <value>` per line (headers are ignored).")
     uploaded_file = st.file_uploader("Upload a signal file", type=["txt"], accept_multiple_files=False)
-
-    # Optional: example file path (developer note: convert local path to URL when needed)
-    # SAMPLE_FILE = "/mnt/data/Screenshot 2025-11-22 022313.png"  # example from environment (not a signal file)
-    # If you want to load a file by path in the environment, you can read it similarly.
-
+    
     if not uploaded_file:
         st.info("Please upload a .txt signal file to continue.")
         return

@@ -3,8 +3,6 @@ import numpy as np
 from utils.tests import SignalComapreAmplitude, SignalComaprePhaseShift
 
 def read_docx_amp_phase(path):
-    import docx
-
     doc = docx.Document(path)
 
     amps = []
@@ -36,7 +34,6 @@ def read_docx_amp_phase(path):
                 pass
 
     return amps, phases
-
 
 def run_dft_tests(expected_amp, expected_phase, my_amp, my_phase):
     
