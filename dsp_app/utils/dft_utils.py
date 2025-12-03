@@ -1,6 +1,8 @@
 import numpy as np
+from utils.fft_utils import fft_manual, ifft_manual
 
-def smart_dft_idft(x, inverse: bool = False):
+def smart_dft_idft(x, inverse: bool = False, use_fft=False):
+    
     
     x = np.array(x, dtype=complex)
 
@@ -25,6 +27,8 @@ def smart_dft_idft(x, inverse: bool = False):
         return x_rec
 
 
+
+
 def compute_amplitude_phase(X, unwrap_phase: bool = False):
     
     amp = np.abs(X)
@@ -32,3 +36,11 @@ def compute_amplitude_phase(X, unwrap_phase: bool = False):
     if unwrap_phase:
         ph = np.unwrap(ph)
     return amp, ph
+
+
+def smart_fourier(x, inverse=False, use_fft=False):
+    
+    if use_fft:
+        return ifft_manual(x) if inverse else fft_manual(x)
+    else:
+        return smart_dft_idft(x, inverse=inverse)
