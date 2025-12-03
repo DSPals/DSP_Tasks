@@ -1,6 +1,7 @@
 import streamlit as st
 import numpy as np
 from io import StringIO
+from utils.file_utils import _parse_signal_file
 from utils.dft_utils import smart_fourier, compute_amplitude_phase
 from utils.plot_utils import plot_signal
 from utils.dft_test_utils import read_docx_amp_phase, run_dft_tests
