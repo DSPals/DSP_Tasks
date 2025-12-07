@@ -62,11 +62,3 @@ logs/
 .DS_Store
 Thumbs.db
 desktop.ini
-
-# ------------------------------
-# Local Files / Test Outputs
-# ------------------------------
-*.txt
-!requirements.txt
-!README.md
-!example_signals/*.txt
