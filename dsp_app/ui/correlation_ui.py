@@ -7,7 +7,7 @@ from utils.correlation_utils import Compare_Signals, normalized_correlation
 
 def corr_tab(display_mode):
 
-    st.header("Correlation")
+    st.header("Correlation & Time Delay")
 
     uploaded_files = st.file_uploader(
         "Upload exactly TWO signal files",
@@ -33,11 +33,24 @@ def corr_tab(display_mode):
 
     corr_indices, corr_values = normalized_correlation(x, h)
 
-    # Show result
+    # Show correlation result
     st.subheader("Correlation Output")
     plot_signal(corr_indices, corr_values, "Correlation Result", mode=display_mode)
 
-    # Test comparison
+    # ------------------ Compute Time Delay ------------------
+    # Find lag index of max absolute correlation
+    lag_index = np.argmax(np.abs(corr_values))
+    lag_samples = corr_indices[lag_index]
+
+    # Sampling frequency
+    Fs = 100  # Hz
+
+    # Display in the expected format
+    st.subheader("Time Delay")
+    st.write(f"Fs = {Fs}")
+    st.write(f"Expected output = {lag_samples}/{Fs}")
+
+    # Optional comparison
     expected_file = st.file_uploader(
         "Upload expected correlation output file (optional)",
         type=["txt"],
@@ -47,4 +60,3 @@ def corr_tab(display_mode):
     if expected_file:
         relative_path = os.path.join("..","Tasks","Task 7", "Point1 Correlation", "CorrOutput.txt")
         Compare_Signals(relative_path, corr_indices, corr_values)
-
