@@ -13,7 +13,7 @@ st.set_page_config(page_title="DSP Signal Processor", layout="wide")
 st.title("DSP Signal Processor")
 
 menu = st.sidebar.radio("Main Menu", 
-        ["Signal Operations", "Signal Generation", "Quantization", "Convolution", "Fourier Transform", "Correlation"])
+        ["Signal Operations", "Signal Generation", "Quantization", "Convolution", "Fourier Transform", "Correlation","Filtering"])
 display_mode = st.sidebar.selectbox("Display Mode", ["Discrete", "Continuous", "Discrete + Continuous"])
 
 if menu == "Signal Operations":
