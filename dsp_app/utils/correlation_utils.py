@@ -1,4 +1,7 @@
+import os
 import numpy as np
+
+from utils.file_utils import read_signal
 
 def normalized_correlation(x, h):
     x = np.array(x, dtype=float)
@@ -61,3 +64,65 @@ def Compare_Signals(file_name,Your_indices,Your_samples):
     print("Correlation Test case passed successfully")
 
 
+
+def read_signal_values_only(file_path):
+    values = []
+    with open(file_path, "r") as f:
+        for line in f:
+            line = line.strip()
+            if line:
+                values.append(float(line))
+    return np.array(values, dtype=float)
+
+
+def read_uploaded_values_only(uploaded_file):
+    values = []
+    for line in uploaded_file:
+        line = line.decode("utf-8").strip()
+        if line:
+            values.append(float(line))
+    return np.array(values, dtype=float)
+
+
+def normalize_signal(x):
+    return (x - np.mean(x)) / (np.std(x) + 1e-8)
+
+
+def classify_signal_avg_max(test_signal, class1_signals, class2_signals):
+
+    def avg_max_corr(test, signals):
+        max_corrs = []
+        for s in signals:
+            L = min(len(test), len(s))
+            test_n = normalize_signal(test[:L])
+            s_n = normalize_signal(s[:L])
+            _, corr = normalized_correlation(test_n, s_n)
+
+            max_corrs.append(np.max(np.abs(corr)))
+        return np.mean(max_corrs)
+
+    c1_avg = avg_max_corr(test_signal, class1_signals)
+    c2_avg = avg_max_corr(test_signal, class2_signals)
+
+    label = "Class 1 (Down Movement)" if c1_avg > c2_avg else "Class 2 (Up Movement)"
+    return label, c1_avg, c2_avg
+
+
+def load_signals_from_folder(folder_path):
+    if not os.path.exists(folder_path):
+        raise FileNotFoundError(f"Folder not found: {folder_path}")
+
+    signals = []
+    for file in os.listdir(folder_path):
+        if file.lower().endswith(".txt"):
+            full_path = os.path.join(folder_path, file)
+            values = read_signal_values_only(full_path)
+            signals.append(values)
+
+    return signals
+
+
+def compute_template(signals):
+    min_len = min(len(s) for s in signals)
+    trimmed = [s[:min_len] for s in signals]
+    return np.mean(trimmed, axis=0)
