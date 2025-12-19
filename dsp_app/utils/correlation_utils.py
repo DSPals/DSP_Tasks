@@ -8,14 +8,12 @@ def normalized_correlation(x, h):
     h = np.array(h, dtype=float)
     N = len(x)
     
-    # Precompute denominator
     denom = np.sqrt(np.sum(x**2) * np.sum(h**2))
     if denom == 0:
         return list(range(N)), [0.0]*N
 
     corr_values = []
     for j in range(N):
-        # Circular shift for periodic correlation
         s = sum(x[n] * h[(n + j) % N] for n in range(N))
         corr_values.append(s / denom)
     
