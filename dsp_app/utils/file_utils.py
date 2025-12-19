@@ -99,6 +99,39 @@ def read_signal(file):
 
     return np.array(indices, dtype=int), np.array(values, dtype=float)
 
+def parse_expected_coeffs(file):
+    """
+    Parses LPFCoefficients.txt uploaded by the user.
+    Format:
+        0
+        0
+        N
+        index value
+        index value
+        ...
+    Returns:
+        indices (list[int])
+        samples (list[float])
+    """
+    indices = []
+    samples = []
+
+    content = file.read().decode("utf-8").strip().split("\n")
+
+    # First 3 lines are headers (0, 0, N)
+    for line in content[3:]:
+        line = line.strip()
+        if not line:
+            continue
+        parts = line.split()
+        if len(parts) != 2:
+            break
+        idx = int(parts[0])
+        val = float(parts[1])
+        indices.append(idx)
+        samples.append(val)
+
+    return indices, samples
 
 
 def download_signal(indices, values, label="Download", default_name="output.txt"):

@@ -5,6 +5,7 @@ from ui.quantization_ui import quantization_tab
 from ui.convolution_ui import Convolution_tab
 from ui.fourier_ui import fourier_tab  
 from ui.correlation_ui import corr_tab
+from ui.filter_ui import filtering_tab
 
 
 st.set_page_config(page_title="DSP Signal Processor", layout="wide")
@@ -27,5 +28,6 @@ elif menu == "Fourier Transform":
     fourier_tab(display_mode)
 elif menu == "Correlation":
     corr_tab(display_mode)
-
+elif menu == "Filtering":
+    filtering_tab(display_mode)
 
