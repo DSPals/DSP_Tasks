@@ -22,9 +22,6 @@ def normalized_correlation(x, h):
     indices = list(range(N))
     return indices, corr_values
 
-
-
-
 def Compare_Signals(file_name,Your_indices,Your_samples):      
     expected_indices=[]
     expected_samples=[]
@@ -63,8 +60,6 @@ def Compare_Signals(file_name,Your_indices,Your_samples):
             return
     print("Correlation Test case passed successfully")
 
-
-
 def read_signal_values_only(file_path):
     values = []
     with open(file_path, "r") as f:
@@ -74,7 +69,6 @@ def read_signal_values_only(file_path):
                 values.append(float(line))
     return np.array(values, dtype=float)
 
-
 def read_uploaded_values_only(uploaded_file):
     values = []
     for line in uploaded_file:
@@ -83,10 +77,8 @@ def read_uploaded_values_only(uploaded_file):
             values.append(float(line))
     return np.array(values, dtype=float)
 
-
 def normalize_signal(x):
     return (x - np.mean(x)) / (np.std(x) + 1e-8)
-
 
 def classify_signal_avg_max(test_signal, class1_signals, class2_signals):
 
@@ -107,7 +99,6 @@ def classify_signal_avg_max(test_signal, class1_signals, class2_signals):
     label = "Class 1 (Down Movement)" if c1_avg > c2_avg else "Class 2 (Up Movement)"
     return label, c1_avg, c2_avg
 
-
 def load_signals_from_folder(folder_path):
     if not os.path.exists(folder_path):
         raise FileNotFoundError(f"Folder not found: {folder_path}")
@@ -121,8 +112,3 @@ def load_signals_from_folder(folder_path):
 
     return signals
 
-
-def compute_template(signals):
-    min_len = min(len(s) for s in signals)
-    trimmed = [s[:min_len] for s in signals]
-    return np.mean(trimmed, axis=0)
