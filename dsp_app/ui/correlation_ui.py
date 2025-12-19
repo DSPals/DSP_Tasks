@@ -22,7 +22,6 @@ def corr_tab(display_mode):
 
 
 def correlation_ui(display_mode):
-
     st.subheader("Correlation & Time Delay")
 
     uploaded_files = st.file_uploader(
@@ -44,6 +43,9 @@ def correlation_ui(display_mode):
         st.info("Please upload exactly two signals.")
         return
 
+    # Ask user for sampling frequency
+    Fs = st.number_input("Enter the sampling frequency (Hz)", min_value=1.0, value=100.0)
+
     (i1, x), (i2, h) = signals
     x = np.array(x, dtype=float)
     h = np.array(h, dtype=float)
@@ -56,12 +58,13 @@ def correlation_ui(display_mode):
     # Time delay
     lag_index = np.argmax(np.abs(corr_values))
     lag_samples = corr_indices[lag_index]
-    Fs = 100  # Hz
+    time_delay = lag_samples / Fs
 
     st.subheader("Time Delay")
-    st.write(f"Fs = {Fs}")
-    st.write(f"Expected output = {lag_samples}/{Fs}")
+    st.write(f"Fs = {Fs} Hz")
+    st.write(f"Expected output = {lag_samples}/{Fs} = {time_delay:.6f} s")
 
+    # Optional: Compare with expected correlation
     expected_file = st.file_uploader(
         "Upload expected correlation output file (optional)",
         type=["txt"],
